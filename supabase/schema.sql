@@ -50,6 +50,10 @@ create table questions (
   
   phase integer check (phase between 1 and 7),
   difficulty integer check (difficulty between 1 and 5),
+  
+  -- New fields for detailed learning path
+  points integer default 10,
+  review_program_id uuid references programs(id), -- Recommended lecture if failed
 
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

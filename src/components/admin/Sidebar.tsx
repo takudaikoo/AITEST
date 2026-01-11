@@ -29,7 +29,7 @@ export function AdminSidebar() {
             <div className="flex h-16 items-center border-b px-6">
                 <Link href="/admin/dashboard" className="flex items-center gap-2 font-bold text-xl">
                     <BrainCircuit className="h-6 w-6 text-primary" />
-                    <span>AI試験くん</span>
+                    <span>AI学ぶくん</span>
                 </Link>
             </div>
             <nav className="flex-1 overflow-y-auto py-4">

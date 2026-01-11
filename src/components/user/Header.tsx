@@ -20,7 +20,7 @@ export function UserHeader() {
                 <Link href="/dashboard" className="mr-6 flex items-center space-x-2">
                     <BrainCircuit className="h-6 w-6 text-primary animate-pulse" />
                     <span className="hidden font-bold sm:inline-block text-xl tracking-tight text-gradient">
-                        AI試験くん <span className="text-[10px] uppercase tracking-widest text-muted-foreground ml-1">Premium</span>
+                        AI学ぶくん <span className="text-[10px] uppercase tracking-widest text-muted-foreground ml-1">Premium</span>
                     </span>
                 </Link>
                 <nav className="flex items-center space-x-6 text-sm font-medium">

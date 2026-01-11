@@ -39,6 +39,8 @@ const formSchema = z.object({
     resource_url: z.string().url("有効なURLを入力してください").optional().or(z.literal("")),
     phase: z.coerce.number().min(1).max(7).optional(),
     difficulty: z.coerce.number().min(1).max(5).optional(),
+    points: z.coerce.number().min(0).default(10),
+    review_program_id: z.string().optional(),
     options: z.array(optionSchema).optional(),
 });
 
@@ -59,7 +61,10 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
             explanation: "",
             resource_url: "",
             phase: 1,
+            phase: 1,
             difficulty: 1,
+            points: 10,
+            review_program_id: "",
             options: [
                 { text: "", is_correct: true },
                 { text: "", is_correct: false },
@@ -111,7 +116,11 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
                     explanation: values.explanation,
                     resource_url: values.resource_url || null,
                     phase: values.phase,
-                    difficulty: values.difficulty
+                    resource_url: values.resource_url || null,
+                    phase: values.phase,
+                    difficulty: values.difficulty,
+                    points: values.points,
+                    review_program_id: values.review_program_id || null
                 }])
                 .select()
                 .single();
@@ -220,6 +229,34 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
                                 <FormLabel>難易度 (1-5)</FormLabel>
                                 <FormControl>
                                     <Input type="number" min={1} max={5} {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                        control={form.control}
+                        name="points"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>配点</FormLabel>
+                                <FormControl>
+                                    <Input type="number" min={0} {...field} />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    {/* For now, text input for Program ID until we have a selector */}
+                    <FormField
+                        control={form.control}
+                        name="review_program_id"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>復習用プログラムID (任意)</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Lecture Program ID" {...field} />
                                 </FormControl>
                             </FormItem>
                         )}
