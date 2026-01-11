@@ -25,8 +25,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Program } from "@/types/database";
-import { Loader2 } from "lucide-react";
+import { Program, Question } from "@/types/database"; // Ensure Question is exported or defined
+import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { useEffect } from "react";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -49,7 +52,37 @@ interface ProgramFormProps {
 export function ProgramForm({ initialData }: ProgramFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [questions, setQuestions] = useState<any[]>([]); // Use appropriate Type
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState<Set<string>>(new Set());
   const supabase = createClient();
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      // Fetch all questions
+      const { data: allQuestions } = await supabase.from("questions").select("*").order("created_at", { ascending: false });
+      if (allQuestions) setQuestions(allQuestions);
+
+      // If editing, fetch existing links
+      if (initialData?.id) {
+        const { data: links } = await supabase.from("program_questions").select("question_id").eq("program_id", initialData.id);
+        if (links) {
+          setSelectedQuestionIds(new Set(links.map(l => l.question_id)));
+        }
+      }
+    };
+    fetchQuestions();
+  }, [initialData, supabase]);
+
+  const toggleQuestion = (questionId: string) => {
+    const newSet = new Set(selectedQuestionIds);
+    if (newSet.has(questionId)) {
+      newSet.delete(questionId);
+    } else {
+      newSet.add(questionId);
+    }
+    setSelectedQuestionIds(newSet);
+  };
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema) as any,
@@ -71,12 +104,30 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      const { error } = initialData
-        ? await supabase.from("programs").update(values).eq("id", initialData.id)
-        : await supabase.from("programs").insert([values]);
+      const programId = initialData ? initialData.id : (await supabase.from("programs").insert([values]).select().single()).data?.id;
 
-      if (error) {
-        throw error;
+      if (!programId) throw new Error("Program ID unavailable");
+
+      // Update basic info if editing
+      if (initialData) {
+        const { error: updateError } = await supabase.from("programs").update(values).eq("id", programId);
+        if (updateError) throw updateError;
+      }
+
+      // Update Question Links (Full Replace Strategy for simplicity)
+      // 1. Delete all existing
+      await supabase.from("program_questions").delete().eq("program_id", programId);
+
+      // 2. Insert new selections
+      const links = Array.from(selectedQuestionIds).map((qid, index) => ({
+        program_id: programId,
+        question_id: qid,
+        question_number: index + 1
+      }));
+
+      if (links.length > 0) {
+        const { error: linkError } = await supabase.from("program_questions").insert(links);
+        if (linkError) throw linkError;
       }
 
       router.push("/admin/programs");
@@ -236,6 +287,37 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
             )}
           />
         )}
+
+        <div className="space-y-4 pt-6 border-t">
+          <h3 className="text-lg font-medium">問題選択</h3>
+          <div className="border rounded-md p-4 h-[400px] overflow-y-auto space-y-2">
+            {questions.length === 0 && <p className="text-sm text-muted-foreground">登録された問題がありません。</p>}
+            {questions.map((q) => (
+              <div key={q.id} className="flex items-start space-x-3 p-2 hover:bg-muted/50 rounded-md transition-colors">
+                <Checkbox
+                  id={`q-${q.id}`}
+                  checked={selectedQuestionIds.has(q.id)}
+                  onCheckedChange={() => toggleQuestion(q.id)}
+                />
+                <div className="grid gap-1.5 leading-none">
+                  <label
+                    htmlFor={`q-${q.id}`}
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                  >
+                    {q.text}
+                  </label>
+                  <p className="text-xs text-muted-foreground">
+                    {q.question_type === 'single_choice' ? '単一選択' : '記述式'} / Lv.{q.difficulty} / {q.points}点
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-sm text-muted-foreground text-right">
+            選択中: {selectedQuestionIds.size} 問
+          </div>
+        </div>
+
 
         <Button type="submit" disabled={loading}>
           {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

@@ -45,11 +45,12 @@ const formSchema = z.object({
 });
 
 interface QuestionFormProps {
-    programId: string;
+    programId?: string; // Made optional for standalone
     onSuccess: () => void;
+    className?: string;
 }
 
-export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
+export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormProps) {
     const [loading, setLoading] = useState(false);
     const supabase = createClient();
 
@@ -169,7 +170,7 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className={`space-y-6 ${props.className || ''}`}>
                 <FormField
                     control={form.control}
                     name="text"

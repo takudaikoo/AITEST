@@ -16,6 +16,7 @@ import {
 const navItems = [
     { href: "/admin/dashboard", label: "ダッシュボード", icon: LayoutDashboard },
     { href: "/admin/programs", label: "プログラム管理", icon: FileQuestion },
+    { href: "/admin/questions", label: "問題管理 (DB)", icon: FileQuestion },
     { href: "/admin/users", label: "ユーザー管理", icon: Users },
     { href: "/admin/analytics", label: "成績分析", icon: BarChart3 },
     { href: "/admin/settings", label: "設定", icon: Settings },
