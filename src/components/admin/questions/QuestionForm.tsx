@@ -52,7 +52,7 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
     const supabase = createClient();
 
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             text: "",
             question_type: "single_choice",

@@ -106,7 +106,7 @@ export default async function SchedulePage() {
                                             </div>
                                             <p className="font-medium line-clamp-1">{program.title}</p>
                                             <div className="flex items-center text-xs text-muted-foreground">
-                                                <Calendar className="mr-1 h-3 w-3" />
+                                                <CalendarIcon className="mr-1 h-3 w-3" />
                                                 {format(parseISO(program.end_date!), 'HH:mm')} まで
                                             </div>
                                         </div>

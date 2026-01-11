@@ -41,7 +41,7 @@ export async function Leaderboard() {
                             </Avatar>
                             <div className="flex-1 space-y-1">
                                 <p className="text-sm font-medium leading-none">{user.email}</p>
-                                <p className="text-xs text-muted-foreground">{user.departments?.name || "部署なし"}</p>
+                                <p className="text-xs text-muted-foreground">{(user.departments as any)?.name || "部署なし"}</p>
                             </div>
                             <div className="font-bold">{user.xp} XP</div>
                         </div>
