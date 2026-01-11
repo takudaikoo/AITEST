@@ -86,11 +86,11 @@
 /* Glassmorphism Utilities */
 @layer utilities {
   .glass {
-    @apply bg-opacity-20 bg-white backdrop-blur-lg border border-white/10;
+    @apply bg-white/20 backdrop-blur-lg border border-white/10;
   }
 
   .glass-dark {
-    @apply bg-opacity-30 bg-black backdrop-blur-xl border border-white/10 shadow-lg;
+    @apply bg-black/30 backdrop-blur-xl border border-white/10 shadow-lg;
   }
 
   .text-gradient {
@@ -98,6 +98,6 @@
   }
 
   .shadow-glow {
-    @apply drop-shadow-[0_0_10px_rgba(139, 92, 246, 0.5)];
+    filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5));
   }
 }
