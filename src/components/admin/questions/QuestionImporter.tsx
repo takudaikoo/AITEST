@@ -7,6 +7,7 @@ import { useState, useRef } from "react";
 import Papa from "papaparse";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Encoding from "encoding-japanese";
 
 // Template CSV Header
 const CSV_HEADER = [
@@ -38,7 +39,16 @@ export function QuestionImporter() {
             fields: CSV_HEADER,
             data: [EXAMPLE_ROW]
         });
-        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+
+        // Convert to SJIS for Excel compatibility
+        const unicodeArray = Encoding.stringToCode(csv);
+        const sjisArray = Encoding.convert(unicodeArray, {
+            to: 'SJIS',
+            from: 'UNICODE'
+        });
+        const uint8Array = new Uint8Array(sjisArray);
+
+        const blob = new Blob([uint8Array], { type: "text/csv" }); // text/csv defaults to ascii/utf-8 usually, but binary blob is safe
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
@@ -56,77 +66,97 @@ export function QuestionImporter() {
         setLoading(true);
         setErrorMsg(null);
 
-        Papa.parse(file, {
-            header: true,
-            skipEmptyLines: true,
-            complete: async (results) => {
-                try {
-                    const rows = results.data as any[];
-                    if (rows.length === 0) throw new Error("CSVファイルが空です");
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+            try {
+                const buffer = event.target?.result as ArrayBuffer;
+                if (!buffer) throw new Error("ファイルの読み込みに失敗しました");
 
-                    // Validate headers
-                    const headers = results.meta.fields;
-                    const missing = CSV_HEADER.filter(h => !headers?.includes(h) && !h.startsWith("option")); // Allow loose option check logic if needed, but strict for core
-                    if (!headers?.includes("text") || !headers?.includes("question_type")) {
-                        throw new Error(`必須カラムが不足しています: text, question_type は必須です。`);
-                    }
+                const uint8Array = new Uint8Array(buffer);
+                // Detect encoding
+                const detected = Encoding.detect(uint8Array);
+                // Convert to Unicode Entry string
+                const unicodeString = Encoding.convert(uint8Array, {
+                    to: 'UNICODE',
+                    from: detected || 'UTF8', // Fallback to UTF8
+                    type: 'string'
+                });
 
-                    // Process rows
-                    for (let i = 0; i < rows.length; i++) {
-                        const row = rows[i];
-                        const lineNum = i + 2; // header + 1-index
+                Papa.parse(unicodeString, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: async (results) => {
+                        try {
+                            const rows = results.data as any[];
+                            if (rows.length === 0) throw new Error("CSVファイルが空です");
 
-                        if (!row.text) continue; // skip empty text rows logic if parse fail
-
-                        // Insert Question
-                        const { data: q, error: qError } = await supabase.from("questions").insert({
-                            text: row.text,
-                            question_type: row.question_type || "single_choice",
-                            explanation: row.explanation || "",
-                            phase: row.phase ? parseInt(row.phase) : 1,
-                            difficulty: row.difficulty ? parseInt(row.difficulty) : 1,
-                            points: row.points ? parseInt(row.points) : 10,
-                            review_program_id: row.review_program_id || null
-                        }).select().single();
-
-                        if (qError) throw new Error(`${lineNum}行目の問題作成に失敗: ${qError.message}`);
-
-                        // Process Options (1-4 fixed for template simplicity)
-                        const optionsToInsert = [];
-                        for (let j = 1; j <= 4; j++) {
-                            const optText = row[`option${j}`];
-                            const optCorrect = row[`option${j}_is_correct`];
-                            if (optText) {
-                                optionsToInsert.push({
-                                    question_id: q.id,
-                                    text: optText,
-                                    is_correct: optCorrect?.toUpperCase() === "TRUE"
-                                });
+                            // Validate headers
+                            const headers = results.meta.fields;
+                            const missing = CSV_HEADER.filter(h => !headers?.includes(h) && !h.startsWith("option"));
+                            if (!headers?.includes("text") || !headers?.includes("question_type")) {
+                                throw new Error(`必須カラムが不足しています: text, question_type は必須です。`);
                             }
-                        }
 
-                        if (optionsToInsert.length > 0) {
-                            const { error: oError } = await supabase.from("options").insert(optionsToInsert);
-                            if (oError) throw new Error(`${lineNum}行目の選択肢保存に失敗: ${oError.message}`);
+                            // Process rows
+                            for (let i = 0; i < rows.length; i++) {
+                                const row = rows[i];
+                                const lineNum = i + 2;
+
+                                if (!row.text) continue;
+
+                                // Insert Question
+                                const { data: q, error: qError } = await supabase.from("questions").insert({
+                                    text: row.text,
+                                    question_type: row.question_type || "single_choice",
+                                    explanation: row.explanation || "",
+                                    phase: row.phase ? parseInt(row.phase) : 1,
+                                    difficulty: row.difficulty ? parseInt(row.difficulty) : 1,
+                                    points: row.points ? parseInt(row.points) : 10,
+                                    review_program_id: row.review_program_id || null
+                                }).select().single();
+
+                                if (qError) throw new Error(`${lineNum}行目の問題作成に失敗: ${qError.message}`);
+
+                                // Options
+                                const optionsToInsert = [];
+                                for (let j = 1; j <= 4; j++) {
+                                    const optText = row[`option${j}`];
+                                    const optCorrect = row[`option${j}_is_correct`];
+                                    if (optText) {
+                                        optionsToInsert.push({
+                                            question_id: q.id,
+                                            text: optText,
+                                            is_correct: optCorrect?.toUpperCase() === "TRUE"
+                                        });
+                                    }
+                                }
+
+                                if (optionsToInsert.length > 0) {
+                                    const { error: oError } = await supabase.from("options").insert(optionsToInsert);
+                                    if (oError) throw new Error(`${lineNum}行目の選択肢保存に失敗: ${oError.message}`);
+                                }
+                            }
+
+                            alert(`${rows.length}件の問題をインポートしました！`);
+                            window.location.reload();
+
+                        } catch (innerErr: any) {
+                            setErrorMsg(innerErr.message);
+                            console.error(innerErr);
+                            setLoading(false);
                         }
+                    },
+                    error: (err) => {
+                        setLoading(false);
+                        setErrorMsg(`CSV解析エラー: ${err.message}`);
                     }
-
-                    alert(`${rows.length}件の問題をインポートしました！`);
-                    window.location.reload();
-
-                } catch (err: any) {
-                    setErrorMsg(err.message);
-                    console.error(err);
-                } finally {
-                    setLoading(false);
-                    if (fileInputRef.current) fileInputRef.current.value = "";
-                }
-            },
-            error: (err) => {
+                });
+            } catch (err: any) {
                 setLoading(false);
-                setErrorMsg(`CSV解析エラー: ${err.message}`);
+                setErrorMsg(err.message);
             }
-        });
+        };
+        reader.readAsArrayBuffer(file);
     };
 
     return (
