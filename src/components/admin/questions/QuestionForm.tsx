@@ -61,7 +61,7 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
             explanation: "",
             resource_url: "",
             phase: 1,
-            phase: 1,
+
             difficulty: 1,
             points: 10,
             review_program_id: "",
@@ -116,8 +116,7 @@ export function QuestionForm({ programId, onSuccess }: QuestionFormProps) {
                     explanation: values.explanation,
                     resource_url: values.resource_url || null,
                     phase: values.phase,
-                    resource_url: values.resource_url || null,
-                    phase: values.phase,
+
                     difficulty: values.difficulty,
                     points: values.points,
                     review_program_id: values.review_program_id || null
