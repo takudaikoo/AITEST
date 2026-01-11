@@ -146,7 +146,7 @@ export function QuestionImporter() {
                             setLoading(false);
                         }
                     },
-                    error: (err) => {
+                    error: (err: any) => {
                         setLoading(false);
                         setErrorMsg(`CSV解析エラー: ${err.message}`);
                     }
