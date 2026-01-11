@@ -1,68 +1,152 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { ArrowRight, BrainCircuit, LayoutDashboard } from "lucide-react";
+"use client";
 
-export default function Home() {
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BrainCircuit, Loader2, Lock, Mail, ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner"; // Assuming sonner or similar usage, or use alert
+
+export default function LoginPage() {
+    const [isLoading, setIsLoading] = useState(false);
+    const router = useRouter();
+    const supabase = createClient();
+
+    // Login Form State
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    // Activation State
+    const [actEmail, setActEmail] = useState("");
+    const [actPassword, setActPassword] = useState("");
+
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+            if (error) throw error;
+            router.push("/dashboard");
+            router.refresh();
+        } catch (error: any) {
+            alert(error.message || "ログインに失敗しました");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleActivation = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsLoading(true);
+        try {
+            // Sign up creates the auth user. 
+            // The trigger in DB will handle profile creation from employee_master if matches.
+            const { error } = await supabase.auth.signUp({
+                email: actEmail,
+                password: actPassword,
+            });
+            if (error) throw error;
+
+            alert("登録確認メールを送信しました。メール内のリンクをクリックしてログインしてください。（開発環境の場合は不要な場合があります）");
+            // If auto-confirm is on in dev:
+            router.push("/dashboard");
+        } catch (error: any) {
+            alert(error.message || "登録に失敗しました");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
-        <main className="flex min-h-screen flex-col items-center justify-center relative overflow-hidden bg-background selection:bg-primary/20">
+        <main className="flex min-h-screen flex-col items-center justify-center relative overflow-hidden bg-background selection:bg-primary/20 p-4">
             {/* Background Effects */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
-                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/20 blur-[120px] animate-pulse" />
-                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/10 blur-[120px] animate-pulse delay-700" />
+                <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/10 blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/05 blur-[120px] animate-pulse delay-700" />
             </div>
 
-            <div className="z-10 w-full max-w-5xl px-5 text-center flex flex-col items-center gap-8">
-                {/* Hero Icon */}
-                <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-full blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200" />
-                    <div className="relative flex items-center justify-center w-24 h-24 rounded-full bg-background border border-white/10 glass-dark shadow-glow">
-                        <BrainCircuit className="w-12 h-12 text-primary" />
+            <div className="z-10 w-full max-w-md space-y-8">
+                <div className="flex flex-col items-center justify-center text-center space-y-2">
+                    <div className="relative flex items-center justify-center w-16 h-16 rounded-full bg-background border border-white/10 glass-dark shadow-glow mb-4">
+                        <BrainCircuit className="w-8 h-8 text-primary" />
                     </div>
+                    <h1 className="text-3xl font-bold tracking-tight text-gradient">AI学ぶくん</h1>
+                    <p className="text-sm text-muted-foreground">社内AIリテラシー向上プラットフォーム</p>
                 </div>
 
-                {/* Hero Text */}
-                <div className="space-y-4">
-                    <h1 className="text-5xl md:text-7xl font-bold tracking-tight">
-                        <span className="text-gradient">AI Exam-kun</span>
-                    </h1>
-                    <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                        社内AIリテラシーを次世代へ。<br />
-                        AI時代に必須の知識とスキルを、洗練されたプラットフォームで学びましょう。
-                    </p>
-                </div>
+                <Card className="glass-dark border-white/10">
+                    <Tabs defaultValue="login" className="w-full">
+                        <TabsList className="grid w-full grid-cols-2 bg-transparent border-b border-white/5 rounded-none px-0">
+                            <TabsTrigger value="login" className="rounded-none data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all">ログイン</TabsTrigger>
+                            <TabsTrigger value="activation" className="rounded-none data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary transition-all">初回登録</TabsTrigger>
+                        </TabsList>
 
-                {/* CTAs */}
-                <div className="flex flex-col sm:flex-row items-center gap-4 mt-8 w-full justify-center">
-                    <Link href="/dashboard" className="w-full sm:w-auto">
-                        <Button size="lg" className="w-full sm:w-auto min-w-[200px] h-12 text-lg rounded-full shadow-glow animate-in fade-in zoom-in duration-500">
-                            学習を始める
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                        </Button>
-                    </Link>
+                        <TabsContent value="login" className="p-6 space-y-4">
+                            <form onSubmit={handleLogin} className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="email">メールアドレス</Label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                        <Input id="email" placeholder="name@company.com" className="pl-9 bg-background/50" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="password">パスワード</Label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                        <Input id="password" type="password" className="pl-9 bg-background/50" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                                    </div>
+                                </div>
+                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    ログイン
+                                </Button>
+                            </form>
+                        </TabsContent>
 
+                        <TabsContent value="activation" className="p-6 space-y-4">
+                            <div className="text-sm text-muted-foreground mb-4 bg-primary/10 p-3 rounded-md">
+                                初回ログイン用のパスワードを設定します。会社に登録されているメールアドレスを使用してください。
+                            </div>
+                            <form onSubmit={handleActivation} className="space-y-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="act-email">メールアドレス (社用)</Label>
+                                    <div className="relative">
+                                        <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                        <Input id="act-email" placeholder="name@company.com" className="pl-9 bg-background/50" value={actEmail} onChange={(e) => setActEmail(e.target.value)} required />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="act-password">パスワード設定</Label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                        <Input id="act-password" type="password" placeholder="6文字以上" className="pl-9 bg-background/50" value={actPassword} onChange={(e) => setActPassword(e.target.value)} minLength={6} required />
+                                    </div>
+                                </div>
+                                <Button type="submit" className="w-full" disabled={isLoading}>
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    パスワードを設定して開始
+                                </Button>
+                            </form>
+                        </TabsContent>
+                    </Tabs>
+                </Card>
 
-                </div>
-
-                {/* Stats / Trust (Visual Filler) */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-16 pt-8 border-t border-white/5 w-full max-w-3xl">
-                    <div className="flex flex-col items-center gap-2">
-                        <span className="text-3xl font-bold text-white">12+</span>
-                        <span className="text-sm text-muted-foreground">学習プログラム</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2">
-                        <span className="text-3xl font-bold text-white">500+</span>
-                        <span className="text-sm text-muted-foreground">受講者</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2 col-span-2 md:col-span-1">
-                        <span className="text-3xl font-bold text-white">No.1</span>
-                        <span className="text-sm text-muted-foreground">社内評価</span>
-                    </div>
+                <div className="text-center">
+                    <Button variant="link" className="text-xs text-muted-foreground" onClick={() => router.push('/admin')}>
+                        管理者はこちら
+                    </Button>
                 </div>
             </div>
-
-            {/* Footer */}
             <div className="absolute bottom-4 text-xs text-muted-foreground/50">
-                &copy; 2024 AI Exam-kun Inc. All rights reserved.
+                &copy; 2024 AI Manabu-kun Inc. All rights reserved.
             </div>
         </main>
     );
