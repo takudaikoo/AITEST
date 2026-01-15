@@ -57,6 +57,23 @@ interface ProgramFormProps {
   initialData?: Program;
 }
 
+// Helper: UTC string from DB -> JST string for Form (YYYY-MM-DDTHH:MM)
+const toJSTString = (isoString?: string | null) => {
+  if (!isoString) return "";
+  const date = new Date(isoString);
+  // Add 9 hours to get JST time in UTC slots
+  const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
+  return jstDate.toISOString().slice(0, 16);
+};
+
+// Helper: JST string from Form -> ISO string for DB (UTC)
+const fromJSTToISO = (jstString?: string | null) => {
+  if (!jstString) return null;
+  // Append +09:00 to treat input as JST
+  const date = new Date(`${jstString}:00+09:00`);
+  return date.toISOString();
+};
+
 export function ProgramForm({ initialData }: ProgramFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -102,8 +119,8 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
       time_limit: initialData?.time_limit || 0,
       passing_score: initialData?.passing_score || 80,
       content_body: initialData?.content_body || "",
-      start_date: initialData?.start_date || "",
-      end_date: initialData?.end_date || "",
+      start_date: toJSTString(initialData?.start_date),
+      end_date: toJSTString(initialData?.end_date),
     },
   });
 
@@ -112,13 +129,19 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      const programId = initialData ? initialData.id : (await supabase.from("programs").insert([values]).select().single()).data?.id;
+      const payload = {
+        ...values,
+        start_date: values.start_date ? fromJSTToISO(values.start_date) : null,
+        end_date: values.end_date ? fromJSTToISO(values.end_date) : null,
+      };
+
+      const programId = initialData ? initialData.id : (await supabase.from("programs").insert([payload]).select().single()).data?.id;
 
       if (!programId) throw new Error("Program ID unavailable");
 
       // Update basic info if editing
       if (initialData) {
-        const { error: updateError } = await supabase.from("programs").update(values).eq("id", programId);
+        const { error: updateError } = await supabase.from("programs").update(payload).eq("id", programId);
         if (updateError) throw updateError;
       }
 
