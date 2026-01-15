@@ -139,11 +139,7 @@ export default function LoginPage() {
                     </Tabs>
                 </Card>
 
-                <div className="text-center">
-                    <Button variant="link" className="text-xs text-muted-foreground" onClick={() => router.push('/admin')}>
-                        管理者はこちら
-                    </Button>
-                </div>
+
             </div>
             <div className="absolute bottom-4 text-xs text-muted-foreground/50">
                 &copy; 2024 AI Manabu-kun Inc. All rights reserved.
