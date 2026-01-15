@@ -43,6 +43,14 @@ const formSchema = z.object({
   content_body: z.string().optional(),
   start_date: z.string().optional().or(z.literal("")),
   end_date: z.string().optional().or(z.literal("")),
+
+});
+
+// 30分刻みの時間オプションを生成
+const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
+  const hour = Math.floor(i / 2);
+  const minute = i % 2 === 0 ? "00" : "30";
+  return `${hour.toString().padStart(2, "0")}:${minute}`;
 });
 
 interface ProgramFormProps {
@@ -214,28 +222,107 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
           <FormField
             control={form.control}
             name="start_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>開始日時</FormLabel>
-                <FormControl>
-                  <Input type="datetime-local" {...field} value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              // 値のパース (YYYY-MM-DDTHH:MM or Empty)
+              // 時間が保存されていない場合はデフォルト09:00などにするか、あるいは空にするか
+              // ここでは値を分解して管理
+              const dateVal = field.value ? field.value.split("T")[0] : "";
+              const timeVal = (field.value && field.value.includes("T")) ? field.value.split("T")[1].slice(0, 5) : "00:00";
+
+              const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                const newDate = e.target.value;
+                if (!newDate) {
+                  field.onChange(""); // クリア
+                  return;
+                }
+                // 日付変更時、時間は既存のものを使うかデフォルト
+                field.onChange(`${newDate}T${timeVal}`);
+              };
+
+              const handleTimeChange = (newTime: string) => {
+                // 日付が未選択の場合どうするか？今のところ日付選択を強制するUIではないが
+                // 日付が入ってないなら日付も入れさせるべきだが、とりあえず日付未入力なら何もしないか、
+                // あるいは空のDate+Timeは作れないので無視
+                if (!dateVal) return;
+                field.onChange(`${dateVal}T${newTime}`);
+              };
+
+              return (
+                <FormItem>
+                  <FormLabel>開始日時</FormLabel>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        type="date"
+                        value={dateVal}
+                        onChange={handleDateChange}
+                        className=""
+                      />
+                    </FormControl>
+                    <Select value={timeVal} onValueChange={handleTimeChange}>
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder="時間" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {TIME_OPTIONS.map((t) => (
+                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
           <FormField
             control={form.control}
             name="end_date"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>終了日時</FormLabel>
-                <FormControl>
-                  <Input type="datetime-local" {...field} value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+            render={({ field }) => {
+              const dateVal = field.value ? field.value.split("T")[0] : "";
+              const timeVal = (field.value && field.value.includes("T")) ? field.value.split("T")[1].slice(0, 5) : "00:00";
+
+              const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+                const newDate = e.target.value;
+                if (!newDate) {
+                  field.onChange("");
+                  return;
+                }
+                field.onChange(`${newDate}T${timeVal}`);
+              };
+
+              const handleTimeChange = (newTime: string) => {
+                if (!dateVal) return;
+                field.onChange(`${dateVal}T${newTime}`);
+              };
+
+              return (
+                <FormItem>
+                  <FormLabel>終了日時</FormLabel>
+                  <div className="flex gap-2">
+                    <FormControl>
+                      <Input
+                        type="date"
+                        value={dateVal}
+                        onChange={handleDateChange}
+                        className=""
+                      />
+                    </FormControl>
+                    <Select value={timeVal} onValueChange={handleTimeChange}>
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder="時間" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[200px]">
+                        {TIME_OPTIONS.map((t) => (
+                          <SelectItem key={t} value={t}>{t}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              );
+            }}
           />
         </div>
 
