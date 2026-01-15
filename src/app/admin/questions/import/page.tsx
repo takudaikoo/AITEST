@@ -22,6 +22,20 @@ export default function ImportQuestionsPage() {
     const [importing, setImporting] = useState(false);
     const [successCount, setSuccessCount] = useState<number | null>(null);
 
+    const [debugInfo, setDebugInfo] = useState<any>(null);
+
+    // Initial check
+    useState(() => {
+        const checkUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                setDebugInfo({ user_id: user.id, profile });
+            }
+        };
+        checkUser();
+    });
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             setFile(e.target.files[0]);
@@ -65,6 +79,22 @@ export default function ImportQuestionsPage() {
     const handleImport = async () => {
         if (parsedData.length === 0 || errors.length > 0) return;
         setImporting(true);
+
+        // Pre-check permissions
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+            setErrors(["ログインしていません"]);
+            setImporting(false);
+            return;
+        }
+
+        // Debug check
+        const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+        if (!profile || profile.role !== 'admin') {
+            setErrors([`権限エラー: あなたのロールは '${profile?.role || "なし"}' です。管理者権限が必要です。SQLを実行してください。`]);
+            setImporting(false);
+            return;
+        }
 
         try {
             let count = 0;
@@ -223,6 +253,14 @@ export default function ImportQuestionsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Debug Info */}
+            <div className="mt-8 p-4 border rounded bg-gray-100 text-xs font-mono">
+                <p><strong>Debug Info:</strong></p>
+                <p>User ID: {debugInfo?.user_id || "Loading..."}</p>
+                <p>Profile ID: {debugInfo?.profile?.id || "None"}</p>
+                <p>Role: {debugInfo?.profile?.role || "None"}</p>
+            </div>
         </div>
     );
 }
