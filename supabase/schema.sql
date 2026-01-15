@@ -54,6 +54,11 @@ create table questions (
   -- New fields for detailed learning path
   points integer default 10,
   review_program_id uuid references programs(id), -- Recommended lecture if failed
+  
+  -- New fields for Question Import and Management (2026-01-16)
+  tags text[], -- Array of tags
+  category text, -- High level grouping
+  image_url text, -- For visual questions
 
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

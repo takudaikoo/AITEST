@@ -140,22 +140,24 @@ export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormPro
                 if (oError) throw oError;
             }
 
-            // 3. Link to Program (Many-to-Many)
-            // Get current max question_number
-            const { count } = await supabase
-                .from("program_questions")
-                .select("*", { count: 'exact', head: true })
-                .eq("program_id", programId);
+            // 3. Link to Program (Many-to-Many) - ONLY IF programId is provided
+            if (programId) {
+                // Get current max question_number
+                const { count } = await supabase
+                    .from("program_questions")
+                    .select("*", { count: 'exact', head: true })
+                    .eq("program_id", programId);
 
-            const nextNumber = (count || 0) + 1;
+                const nextNumber = (count || 0) + 1;
 
-            const { error: linkError } = await supabase.from("program_questions").insert({
-                program_id: programId,
-                question_id: question.id,
-                question_number: nextNumber
-            });
+                const { error: linkError } = await supabase.from("program_questions").insert({
+                    program_id: programId,
+                    question_id: question.id,
+                    question_number: nextNumber
+                });
 
-            if (linkError) throw linkError;
+                if (linkError) throw linkError;
+            }
 
             form.reset();
             onSuccess();

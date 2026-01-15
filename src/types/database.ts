@@ -33,5 +33,8 @@ export type Question = {
     resource_url: string | null;
     phase: number | null;
     difficulty: number | null;
+    tags: string[] | null;
+    category: string | null;
+    image_url: string | null;
     created_at: string;
 };
