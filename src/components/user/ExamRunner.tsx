@@ -10,7 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle, XCircle, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
@@ -45,6 +45,9 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
         return () => clearInterval(timer);
     }, [timeLeft]);
 
+    const [gradingResults, setGradingResults] = useState<Record<string, { isCorrect: boolean, score: number, feedback: string }>>({});
+    const [isGrading, setIsGrading] = useState(false);
+
     const handleOptionSelect = (questionId: string, value: string | string[]) => {
         setAnswers((prev) => ({
             ...prev,
@@ -61,6 +64,43 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
     const handlePrev = () => {
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(prev => prev - 1);
+        }
+    };
+
+    const handleAIGrading = async () => {
+        if (!currentQuestion || currentQuestion.question_type !== 'text') return;
+        const answer = answers[currentQuestion.id];
+        if (!answer || answer.trim().length === 0) {
+            alert("回答を入力してください");
+            return;
+        }
+
+        setIsGrading(true);
+        try {
+            const res = await fetch("/api/grade", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    questionText: currentQuestion.text,
+                    userAnswer: answer,
+                    gradingPrompt: currentQuestion.grading_prompt, // Passed from parent
+                    explanation: currentQuestion.explanation
+                })
+            });
+
+            if (!res.ok) throw new Error("API Error");
+            const data = await res.json();
+
+            setGradingResults(prev => ({
+                ...prev,
+                [currentQuestion.id]: data
+            }));
+
+        } catch (error) {
+            console.error(error);
+            alert("採点に失敗しました");
+        } finally {
+            setIsGrading(false);
         }
     };
 
@@ -98,8 +138,12 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                         isCorrect = true;
                     }
                 } else {
-                    // Text - Manual grading usually needed. For now assume correct or handle later?
-                    // Let's mark as false for now until graded, or just ignore score.
+                    // Text - Use the AI result if available
+                    const result = gradingResults[q.id];
+                    if (result && result.isCorrect) {
+                        isCorrect = true;
+                    }
+                    // If not graded or false, it remains false.
                 }
 
                 if (isCorrect) obtainedScore += (100 / questions.length); // Simple equal weighting
@@ -259,12 +303,41 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                     )}
 
                     {currentQuestion.question_type === 'text' && (
-                        <Textarea
-                            placeholder="回答を入力..."
-                            className="min-h-[200px]"
-                            value={answers[currentQuestion.id] || ""}
-                            onChange={(e) => handleOptionSelect(currentQuestion.id, e.target.value)}
-                        />
+                        <div className="space-y-4">
+                            <Textarea
+                                placeholder="回答を入力..."
+                                className="min-h-[150px]"
+                                value={answers[currentQuestion.id] || ""}
+                                onChange={(e) => handleOptionSelect(currentQuestion.id, e.target.value)}
+                            />
+
+                            <div className="flex justify-end">
+                                <Button
+                                    onClick={handleAIGrading}
+                                    disabled={isGrading || !answers[currentQuestion.id]}
+                                    variant="secondary"
+                                    className="gap-2"
+                                >
+                                    {isGrading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-yellow-500" />}
+                                    AI採点実行
+                                </Button>
+                            </div>
+
+                            {gradingResults[currentQuestion.id] && (
+                                <Alert className={cn("mt-4", gradingResults[currentQuestion.id].isCorrect ? "border-green-500 bg-green-500/10" : "border-red-500 bg-red-500/10")}>
+                                    {gradingResults[currentQuestion.id].isCorrect ?
+                                        <CheckCircle className="h-4 w-4 text-green-500" /> :
+                                        <XCircle className="h-4 w-4 text-red-500" />
+                                    }
+                                    <AlertTitle className={gradingResults[currentQuestion.id].isCorrect ? "text-green-500" : "text-red-500"}>
+                                        {gradingResults[currentQuestion.id].isCorrect ? "正解" : "不正解"}
+                                    </AlertTitle>
+                                    <AlertDescription className="mt-2 text-foreground">
+                                        {gradingResults[currentQuestion.id].feedback}
+                                    </AlertDescription>
+                                </Alert>
+                            )}
+                        </div>
                     )}
 
                     {currentQuestion.question_type === 'multiple_choice' && (

@@ -55,7 +55,7 @@ export default async function PlayPage({ params }: PlayPageProps) {
         .select(`
       question_number,
       questions (
-        id, text, question_type,
+        id, text, question_type, grading_prompt, explanation,
         options (id, text, is_correct) 
       )
     `)

@@ -36,6 +36,7 @@ const formSchema = z.object({
     text: z.string().min(5, "問題文は5文字以上で入力してください"),
     question_type: z.enum(["single_choice", "multiple_choice", "text"]),
     explanation: z.string().optional(),
+    grading_prompt: z.string().optional(),
     resource_url: z.string().url("有効なURLを入力してください").optional().or(z.literal("")),
     phase: z.coerce.number().min(1).max(7).optional(),
     difficulty: z.coerce.number().min(1).max(5).optional(),
@@ -60,6 +61,7 @@ export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormPro
             text: "",
             question_type: "single_choice",
             explanation: "",
+            grading_prompt: "",
             resource_url: "",
             phase: 1,
 
@@ -115,6 +117,7 @@ export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormPro
                     text: values.text,
                     question_type: values.question_type,
                     explanation: values.explanation,
+                    grading_prompt: values.grading_prompt || null,
                     resource_url: values.resource_url || null,
                     phase: values.phase,
 
@@ -295,6 +298,29 @@ export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormPro
                             <Plus className="mr-2 h-4 w-4" /> 選択肢を追加
                         </Button>
                     </div>
+                )}
+
+                {watchType === 'text' && (
+                    <FormField
+                        control={form.control}
+                        name="grading_prompt"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>AI採点基準 (プロンプト指示)</FormLabel>
+                                <FormControl>
+                                    <Textarea
+                                        placeholder="例: 「コンプライアンス」という単語が含まれていること。200文字以内で要約されていること。"
+                                        className="h-24"
+                                        {...field}
+                                    />
+                                </FormControl>
+                                <FormDescription>
+                                    AIが正誤判定をする際の基準を入力してください。正解・解説の内容と合わせてAIに渡されます。
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
