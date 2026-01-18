@@ -52,11 +52,13 @@ interface QuestionFormProps {
     questionId?: string;
     initialData?: any;
     onSuccess: () => void;
+    redirectTo?: string;
     className?: string;
 }
 
-export function QuestionForm({ programId, questionId, initialData, onSuccess, ...props }: QuestionFormProps) {
+export function QuestionForm({ programId, questionId, initialData, onSuccess, redirectTo, ...props }: QuestionFormProps) {
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
     const supabase = createClient();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -222,6 +224,10 @@ export function QuestionForm({ programId, questionId, initialData, onSuccess, ..
 
             form.reset();
             onSuccess();
+            if (redirectTo) {
+                router.refresh();
+                router.push(redirectTo);
+            }
 
         } catch (error: any) {
             console.error(error);
