@@ -73,7 +73,7 @@ export function UserHeader({ user }: { user: any }) {
                                 const { createClient } = await import("@/lib/supabase/client");
                                 const supabase = createClient();
                                 await supabase.auth.signOut();
-                                window.location.href = "/login";
+                                window.location.href = "/";
                             }} className="cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-400/10">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 <span>ログアウト</span>
