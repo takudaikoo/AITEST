@@ -1,7 +1,5 @@
+
 import { createClient } from "@/lib/supabase/server";
-import { Button } from "@/components/ui/button";
-import { Building2 } from "lucide-react";
-import Link from "next/link";
 import {
     Table,
     TableBody,
@@ -10,60 +8,82 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { UserEditDialog } from "@/components/admin/users/UserEditDialog";
 import { Badge } from "@/components/ui/badge";
 
 export default async function UsersPage() {
     const supabase = createClient();
-    const { data: users } = await supabase
+
+    // Fetch users with their departments
+    const { data: users, error } = await supabase
         .from("profiles")
         .select(`
-        *,
-        departments ( name )
-    `)
-        .order("created_at", { ascending: false });
+            id,
+            email,
+            full_name,
+            role,
+            rank,
+            department_id,
+            departments (
+                id,
+                name
+            )
+        `)
+        .order('created_at', { ascending: false });
+
+    const { data: departments } = await supabase
+        .from("departments")
+        .select("*")
+        .order("name");
+
+    console.log(users);
+
+    if (error) {
+        return <div>Error loading users: {error.message}</div>;
+    }
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">ユーザー管理</h2>
-                <Button variant="outline" asChild>
-                    <Link href="/admin/users/departments">
-                        <Building2 className="mr-2 h-4 w-4" />
-                        部署を管理
-                    </Link>
-                </Button>
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">ユーザー管理</h2>
+                    <p className="text-muted-foreground">
+                        ユーザーの権限や所属部署を管理します。
+                    </p>
+                </div>
             </div>
 
-            <div className="rounded-md border bg-card">
+            <div className="rounded-md border">
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>名前</TableHead>
                             <TableHead>メールアドレス</TableHead>
                             <TableHead>部署</TableHead>
-                            <TableHead>ランク</TableHead>
                             <TableHead>権限</TableHead>
-                            <TableHead>XP</TableHead>
+                            <TableHead>ランク</TableHead>
+                            <TableHead className="text-right">操作</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users?.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center">
-                                    ユーザーがいません。
-                                </TableCell>
-                            </TableRow>
-                        )}
                         {users?.map((user) => (
                             <TableRow key={user.id}>
-                                <TableCell className="font-medium">{user.email}</TableCell>
-                                <TableCell>{user.departments?.name || "-"}</TableCell>
+                                <TableCell className="font-medium">{user.full_name || "未設定"}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>{(user.departments as any)?.name || "-"}</TableCell>
                                 <TableCell>
-                                    <Badge variant="secondary">{user.rank}</Badge>
+                                    <Badge variant={user.role === 'admin' ? 'destructive' : 'secondary'}>
+                                        {user.role === 'admin' ? '管理者' : '一般'}
+                                    </Badge>
                                 </TableCell>
-                                <TableCell>
-                                    <Badge variant="outline">{user.role}</Badge>
+                                <TableCell>{user.rank}</TableCell>
+                                <TableCell className="text-right">
+                                    <UserEditDialog
+                                        user={user}
+                                        departments={departments || []}
+                                    />
                                 </TableCell>
-                                <TableCell>{user.xp}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>

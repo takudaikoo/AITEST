@@ -12,6 +12,7 @@ create table departments (
 create table profiles (
   id uuid references auth.users on delete cascade primary key,
   email text,
+  full_name text, -- Added 2026-01-18
   role text default 'user' check (role in ('user', 'admin')),
   department_id uuid references departments(id),
   rank text default 'Beginner',
@@ -171,7 +172,7 @@ create or replace function public.handle_new_user()
 returns trigger as $$
 begin
   insert into public.profiles (id, email, role, created_at)
-  values (new.id, new.email, 'admin', now());
+  values (new.id, new.email, 'user', now());
   return new;
 end;
 $$ language plpgsql security definer;

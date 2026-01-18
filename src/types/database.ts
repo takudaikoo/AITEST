@@ -1,6 +1,7 @@
 export type Profile = {
     id: string;
     email: string | null;
+    full_name: string | null;
     role: 'user' | 'admin';
     department_id: string | null;
     rank: string;

@@ -38,14 +38,18 @@ export default async function ProfilePage() {
         <div className="space-y-8">
             <div className="flex items-center gap-4">
                 <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary">
-                    {profile?.email?.charAt(0).toUpperCase()}
+                    {profile?.full_name?.[0] || profile?.email?.[0] || 'U'}
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold">{profile?.email}</h1>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <span>{profile?.departments?.name || "部署未設定"}</span>
-                        <span>•</span>
-                        <Badge variant="secondary">{profile?.rank || "Beginner"}</Badge>
+                    <h1 className="text-3xl font-bold">{profile?.full_name || 'ユーザー名未設定'}</h1>
+                    <p className="text-muted-foreground mb-2">{profile?.email}</p>
+                    <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="bg-background/50 backdrop-blur">
+                            {profile?.departments?.name || "部署未設定"}
+                        </Badge>
+                        <Badge variant="secondary" className="shadow-sm">
+                            {profile?.rank || "Beginner"}
+                        </Badge>
                     </div>
                 </div>
             </div>

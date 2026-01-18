@@ -24,12 +24,20 @@ async function getRecommendedPrograms() {
 }
 
 export default async function DashboardPage() {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user?.id!)
+        .single();
+
     const recommended = await getRecommendedPrograms();
 
     return (
         <div className="space-y-8">
             <section className="space-y-4">
-                <h2 className="text-3xl font-bold tracking-tight">おかえりなさい、ユーザーさん</h2>
+                <h2 className="text-3xl font-bold tracking-tight">おかえりなさい、{profile?.full_name || 'ユーザー'}さん</h2>
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <Card className="bg-gradient-to-br from-violet-900/20 to-indigo-900/20 border-violet-500/20">
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

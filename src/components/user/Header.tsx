@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function UserHeader() {
+export function UserHeader({ user }: { user: any }) {
     return (
         <header className="sticky top-0 z-50 w-full border-b border-white/10 glass-dark">
             <div className="container flex h-16 items-center">
@@ -49,16 +49,16 @@ export function UserHeader() {
                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                 <Avatar className="h-8 w-8">
                                     <AvatarImage src="/avatars/01.png" alt="@user" />
-                                    <AvatarFallback>U</AvatarFallback>
+                                    <AvatarFallback>{user?.full_name?.[0] || 'U'}</AvatarFallback>
                                 </Avatar>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56" align="end" forceMount>
                             <DropdownMenuLabel className="font-normal">
                                 <div className="flex flex-col space-y-1">
-                                    <p className="text-sm font-medium leading-none">ユーザー名</p>
+                                    <p className="text-sm font-medium leading-none">{user?.full_name || 'ユーザー名'}</p>
                                     <p className="text-xs leading-none text-muted-foreground">
-                                        user@example.com
+                                        {user?.email || 'user@example.com'}
                                     </p>
                                 </div>
                             </DropdownMenuLabel>
@@ -69,7 +69,12 @@ export function UserHeader() {
                                     <span>プロフィール</span>
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={async () => {
+                                const { createClient } = await import("@/lib/supabase/client");
+                                const supabase = createClient();
+                                await supabase.auth.signOut();
+                                window.location.href = "/login";
+                            }} className="cursor-pointer text-red-400 focus:text-red-400 focus:bg-red-400/10">
                                 <LogOut className="mr-2 h-4 w-4" />
                                 <span>ログアウト</span>
                             </DropdownMenuItem>
