@@ -17,7 +17,12 @@ export async function POST(req: Request) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({
+            model: "gemini-1.5-flash",
+            generationConfig: {
+                maxOutputTokens: 300, // Limit max output tokens for cost efficiency
+            }
+        });
 
         const prompt = `
 あなたは試験の採点官です。以下の情報をもとに、ユーザーの回答を採点してください。
@@ -36,10 +41,12 @@ ${userAnswer}
 
 ---
 以下の形式のJSONで出力してください（マークダウンのコードブロックは不要です。純粋なJSONのみを返してください）。
+フィードバックは**非常に簡潔に**（200文字以内）でお願いします。長文は避けてください。
+
 {
   "isCorrect": boolean, // 正解ならtrue、不正解ならfalse
   "score": number, // 0〜10点
-  "feedback": "string" // ユーザーへのフィードバック（なぜ合っているか、どこが間違っているか、改善点など。日本語で丁寧な口調で。）
+  "feedback": "string" // ユーザーへのフィードバック（200文字以内。簡潔に。）
 }
         `;
 

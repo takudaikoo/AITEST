@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -28,6 +29,7 @@ import { Loader2, Plus, Trash } from "lucide-react";
 
 // Schema for a single option
 const optionSchema = z.object({
+    id: z.string().optional(),
     text: z.string().min(1, "選択肢を入力してください"),
     is_correct: z.boolean().default(false),
 });
@@ -46,29 +48,31 @@ const formSchema = z.object({
 });
 
 interface QuestionFormProps {
-    programId?: string; // Made optional for standalone
+    programId?: string;
+    questionId?: string;
+    initialData?: any;
     onSuccess: () => void;
     className?: string;
 }
 
-export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormProps) {
+export function QuestionForm({ programId, questionId, initialData, onSuccess, ...props }: QuestionFormProps) {
     const [loading, setLoading] = useState(false);
     const supabase = createClient();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema) as any,
         defaultValues: {
-            text: "",
-            question_type: "single_choice",
-            explanation: "",
-            grading_prompt: "",
-            resource_url: "",
-            phase: 1,
+            text: initialData?.text || "",
+            question_type: initialData?.question_type || "single_choice",
+            explanation: initialData?.explanation || "",
+            grading_prompt: initialData?.grading_prompt || "",
+            resource_url: initialData?.resource_url || "",
+            phase: initialData?.phase || 1,
 
-            difficulty: 1,
-            points: 10,
-            review_program_id: "",
-            options: [
+            difficulty: initialData?.difficulty || 1,
+            points: initialData?.points || 10,
+            review_program_id: initialData?.review_program_id || "",
+            options: initialData?.options || [
                 { text: "", is_correct: true },
                 { text: "", is_correct: false },
             ],
@@ -110,64 +114,118 @@ export function QuestionForm({ programId, onSuccess, ...props }: QuestionFormPro
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true);
         try {
-            // 1. Insert Question
-            const { data: question, error: qError } = await supabase
-                .from("questions")
-                .insert([{
-                    text: values.text,
-                    question_type: values.question_type,
-                    explanation: values.explanation,
-                    grading_prompt: values.grading_prompt || null,
-                    resource_url: values.resource_url || null,
-                    phase: values.phase,
+            let targetQuestionId = questionId;
 
-                    difficulty: values.difficulty,
-                    points: values.points,
-                    review_program_id: values.review_program_id || null
-                }])
-                .select()
-                .single();
+            if (questionId) {
+                // --- UPDATE MODE ---
+                const { error: qError } = await supabase
+                    .from("questions")
+                    .update({
+                        text: values.text,
+                        question_type: values.question_type,
+                        explanation: values.explanation,
+                        grading_prompt: values.grading_prompt || null,
+                        resource_url: values.resource_url || null,
+                        phase: values.phase,
+                        difficulty: values.difficulty,
+                        points: values.points,
+                        review_program_id: values.review_program_id || null
+                    })
+                    .eq("id", questionId);
 
-            if (qError) throw qError;
-            if (!question) throw new Error("Failed to create question");
+                if (qError) throw qError;
 
-            // 2. Insert Options (if choice type)
-            if (values.question_type !== 'text' && values.options && values.options.length > 0) {
-                const optionsToInsert = values.options.map(opt => ({
-                    question_id: question.id,
-                    text: opt.text,
-                    is_correct: opt.is_correct
-                }));
+                // Handle Options Update
+                if (values.question_type !== 'text' && values.options) {
+                    // Fetch existing to find deletions
+                    const { data: existingOpts } = await supabase
+                        .from("options")
+                        .select("id")
+                        .eq("question_id", questionId);
 
-                const { error: oError } = await supabase.from("options").insert(optionsToInsert);
-                if (oError) throw oError;
-            }
+                    const existingIds = existingOpts?.map(o => o.id) || [];
+                    const formIds = values.options.map(o => o.id).filter(Boolean) as string[];
 
-            // 3. Link to Program (Many-to-Many) - ONLY IF programId is provided
-            if (programId) {
-                // Get current max question_number
-                const { count } = await supabase
-                    .from("program_questions")
-                    .select("*", { count: 'exact', head: true })
-                    .eq("program_id", programId);
+                    // Delete removed options
+                    const toDelete = existingIds.filter(id => !formIds.includes(id));
+                    if (toDelete.length > 0) {
+                        await supabase.from("options").delete().in("id", toDelete);
+                    }
 
-                const nextNumber = (count || 0) + 1;
+                    // Upsert (Update existing + Insert new)
+                    const { error: oError } = await supabase.from("options").upsert(
+                        values.options.map(opt => ({
+                            id: opt.id, // if undefined, it's ignored by Supabase usually? No, for Insert we shouldn't send undefined ID if PK is UUID gen.
+                            // Actually, clean object is better.
+                            ...(opt.id ? { id: opt.id } : {}),
+                            question_id: questionId,
+                            text: opt.text,
+                            is_correct: opt.is_correct
+                        }))
+                    );
+                    if (oError) throw oError;
+                }
 
-                const { error: linkError } = await supabase.from("program_questions").insert({
-                    program_id: programId,
-                    question_id: question.id,
-                    question_number: nextNumber
-                });
+            } else {
+                // --- CREATE MODE ---
+                const { data: question, error: qError } = await supabase
+                    .from("questions")
+                    .insert([{
+                        text: values.text,
+                        question_type: values.question_type,
+                        explanation: values.explanation,
+                        grading_prompt: values.grading_prompt || null,
+                        resource_url: values.resource_url || null,
+                        phase: values.phase,
+                        difficulty: values.difficulty,
+                        points: values.points,
+                        review_program_id: values.review_program_id || null
+                    }])
+                    .select()
+                    .single();
 
-                if (linkError) throw linkError;
+                if (qError) throw qError;
+                if (!question) throw new Error("Failed to create question");
+
+                targetQuestionId = question.id;
+
+                // Insert Options
+                if (values.question_type !== 'text' && values.options && values.options.length > 0) {
+                    const optionsToInsert = values.options.map(opt => ({
+                        question_id: question.id,
+                        text: opt.text,
+                        is_correct: opt.is_correct
+                    }));
+
+                    const { error: oError } = await supabase.from("options").insert(optionsToInsert);
+                    if (oError) throw oError;
+                }
+
+                // Link to Program if provided
+                if (programId) {
+                    const { count } = await supabase
+                        .from("program_questions")
+                        .select("*", { count: 'exact', head: true })
+                        .eq("program_id", programId);
+
+                    const nextNumber = (count || 0) + 1;
+
+                    const { error: linkError } = await supabase.from("program_questions").insert({
+                        program_id: programId,
+                        question_id: question.id,
+                        question_number: nextNumber
+                    });
+
+                    if (linkError) throw linkError;
+                }
             }
 
             form.reset();
             onSuccess();
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert("問題の作成に失敗しました");
+            alert(error.message || "処理に失敗しました");
         } finally {
             setLoading(false);
         }

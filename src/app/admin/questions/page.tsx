@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Plus, Pencil } from "lucide-react";
 import Link from "next/link";
 import {
     Table,
@@ -50,6 +50,7 @@ export default async function QuestionsPage() {
                             <TableHead>難易度</TableHead>
                             <TableHead>配点</TableHead>
                             <TableHead>作成日</TableHead>
+                            <TableHead>操作</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -72,6 +73,13 @@ export default async function QuestionsPage() {
                                 <TableCell>Lv.{q.difficulty}</TableCell>
                                 <TableCell>{q.points}点</TableCell>
                                 <TableCell>{new Date(q.created_at).toLocaleDateString()}</TableCell>
+                                <TableCell>
+                                    <Button variant="ghost" size="icon" asChild>
+                                        <Link href={`/admin/questions/${q.id}`}>
+                                            <Pencil className="h-4 w-4" />
+                                        </Link>
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
