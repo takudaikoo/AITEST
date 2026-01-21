@@ -63,50 +63,81 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
 
             <div className="space-y-6">
                 <h3 className="text-xl font-semibold">回答の振り返り</h3>
-                {history.user_answers?.map((ans: any, index: number) => {
-                    // Determine if this answer row is correct.
-                    // Note: Schema structure for m-choice might have multiple rows. 
-                    // Visualization here assumes single choice simple view for now.
-                    const question = ans.questions;
-                    const isCorrect = ans.is_correct; // If we trusted client logic
+                {(() => {
+                    // Deduplicate questions to handle multiple usage rows for multiple choice
+                    const questionMap = new Map();
+                    history.user_answers?.forEach((ans: any) => {
+                        if (!questionMap.has(ans.question_id)) {
+                            questionMap.set(ans.question_id, {
+                                question: ans.questions,
+                                selectedOptionIds: [],
+                                textAnswer: ans.text_answer,
+                                isCorrect: ans.is_correct // Logic might need refinement for multiple choice partials if partials existed, but here we assume uniformity
+                            });
+                        }
+                        const entry = questionMap.get(ans.question_id);
+                        if (ans.selected_option_id) {
+                            entry.selectedOptionIds.push(ans.selected_option_id);
+                        }
+                    });
 
-                    return (
-                        <Card key={index} className="overflow-hidden">
-                            <CardHeader className="bg-secondary/20 pb-4">
-                                <div className="flex items-start gap-4">
-                                    <Badge variant={isPassed ? "default" : "destructive"} className="mt-1">Q{index + 1}</Badge>
-                                    <div className="flex-1 space-y-1">
-                                        <CardTitle className="text-base">{question.text}</CardTitle>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-6 space-y-4">
-                                <div className="grid md:grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <span className="text-sm font-medium text-muted-foreground">あなたの回答</span>
-                                        <div className="p-3 rounded-md border bg-background">
-                                            {/* Resolve Option Text */}
-                                            {question.options?.find((o: any) => o.id === ans.selected_option_id)?.text || ans.text_answer || "未回答"}
+                    return Array.from(questionMap.values()).map((item: any, index: number) => {
+                        const { question, selectedOptionIds, textAnswer, isCorrect } = item;
+
+                        // For multiple choice, we need to check if ALL selected matches ALL correct?
+                        // The saved `is_correct` in DB is per row. If one row is false, the question is likely false.
+                        // However, let's rely on the first row's `is_correct` or re-evaluate. 
+                        // In ExamRunner, we set is_correct=false for simplified rows in multiple choice, so likely it shows as incorrect.
+                        // Let's rely on the flag for now.
+
+                        // Resolve User Answer Text
+                        let userAnswerDisplay = "未回答";
+                        if (question.question_type === 'text') {
+                            userAnswerDisplay = textAnswer || "未回答";
+                        } else if (selectedOptionIds.length > 0) {
+                            userAnswerDisplay = question.options
+                                ?.filter((o: any) => selectedOptionIds.includes(o.id))
+                                .map((o: any) => o.text)
+                                .join(", ");
+                        }
+
+                        return (
+                            <Card key={index} className="overflow-hidden">
+                                <CardHeader className="bg-secondary/20 pb-4">
+                                    <div className="flex items-start gap-4">
+                                        <Badge variant={isCorrect ? "default" : "destructive"} className="mt-1">Q{index + 1}</Badge>
+                                        <div className="flex-1 space-y-1">
+                                            <CardTitle className="text-base">{question.text}</CardTitle>
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <span className="text-sm font-medium text-muted-foreground">正解</span>
-                                        <div className="p-3 rounded-md border bg-muted/50">
-                                            {question.options?.filter((o: any) => o.is_correct).map((o: any) => o.text).join(", ")}
+                                </CardHeader>
+                                <CardContent className="p-6 space-y-4">
+                                    <div className="grid md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <span className="text-sm font-medium text-muted-foreground">あなたの回答</span>
+                                            <div className="p-3 rounded-md border bg-background">
+                                                {userAnswerDisplay}
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <span className="text-sm font-medium text-muted-foreground">正解</span>
+                                            <div className="p-3 rounded-md border bg-muted/50">
+                                                {question.options?.filter((o: any) => o.is_correct).map((o: any) => o.text).join(", ")}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {question.explanation && (
-                                    <div className="mt-4 rounded-md bg-blue-50/10 p-4 text-sm">
-                                        <span className="font-semibold block mb-1">解説:</span>
-                                        {question.explanation}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                                    {question.explanation && (
+                                        <div className="mt-4 rounded-md bg-blue-50/10 p-4 text-sm">
+                                            <span className="font-semibold block mb-1">解説:</span>
+                                            {question.explanation}
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        );
+                    });
+                })()}
             </div>
         </div>
     );

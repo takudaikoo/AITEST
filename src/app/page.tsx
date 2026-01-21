@@ -28,7 +28,17 @@ export default function LoginPage() {
                 password,
             });
             if (error) throw error;
-            router.push("/dashboard");
+            if (error) throw error;
+
+            // Check for initial password change requirement for specific user
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user?.email?.includes("smagol01") && !user?.user_metadata?.password_changed) {
+                router.push("/dashboard/settings/password");
+            } else {
+                router.push("/dashboard");
+            }
+
             router.refresh();
         } catch (error: any) {
             alert(error.message || "ログインに失敗しました");

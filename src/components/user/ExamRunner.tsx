@@ -294,7 +294,15 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                             onValueChange={(val) => handleOptionSelect(currentQuestion.id, val)}
                         >
                             {currentQuestion.options?.map((opt: any) => (
-                                <div key={opt.id} className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent">
+                                <div
+                                    key={opt.id}
+                                    className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent"
+                                    onClick={(e) => {
+                                        // Prevent event from bubbling if clicking the radio itself to avoid conflict or redundancy
+                                        // But for Radio, distinct redundant clicks are fine.
+                                        handleOptionSelect(currentQuestion.id, opt.id)
+                                    }}
+                                >
                                     <RadioGroupItem value={opt.id} id={opt.id} />
                                     <Label htmlFor={opt.id} className="flex-1 cursor-pointer">{opt.text}</Label>
                                 </div>
@@ -346,7 +354,21 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                                 const currentSelected = (answers[currentQuestion.id] || []) as string[];
                                 const isChecked = currentSelected.includes(opt.id);
                                 return (
-                                    <div key={opt.id} className="flex items-center space-x-2 border rounded p-4">
+                                    <div
+                                        key={opt.id}
+                                        className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent"
+                                        onClick={(e) => {
+                                            // Prevent double toggle if clicking the checkbox/label directly (since they handle their own events)
+                                            if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('label')) return;
+
+                                            // Toggle logic
+                                            if (isChecked) {
+                                                handleOptionSelect(currentQuestion.id, currentSelected.filter(id => id !== opt.id));
+                                            } else {
+                                                handleOptionSelect(currentQuestion.id, [...currentSelected, opt.id]);
+                                            }
+                                        }}
+                                    >
                                         <Checkbox
                                             id={opt.id}
                                             checked={isChecked}
@@ -358,7 +380,7 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                                                 }
                                             }}
                                         />
-                                        <Label htmlFor={opt.id} className="flex-1 cursor-pointer">{opt.text}</Label>
+                                        <Label htmlFor={opt.id} className="flex-1 cursor-pointer pointer-events-none">{opt.text}</Label>
                                     </div>
                                 )
                             })}
