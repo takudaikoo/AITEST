@@ -60,6 +60,19 @@ export async function completeActivity(
             .eq("id", history.program_id)
             .single();
 
+        // Check if user has ALREADY passed/completed this program previously
+        // If so, XP reward is 0 (first-time bonus only)
+        const { data: existingPass } = await supabase
+            .from("learning_history")
+            .select("id")
+            .eq("user_id", user.id)
+            .eq("program_id", history.program_id)
+            .eq("is_passed", true)
+            .neq("id", historyId) // Don't count current session if somehow persisted
+            .limit(1);
+
+        const isFirstTimeCleanPass = !existingPass || existingPass.length === 0;
+
         // Determine XP Reward
         // If xp_reward is set, use it. Otherwise defaults.
         let xpReward = program?.xp_reward;
@@ -75,6 +88,8 @@ export async function completeActivity(
         // Zero XP if not passed
         if (!isPassed) {
             xpReward = 0;
+        } else if (!isFirstTimeCleanPass) {
+            xpReward = 0; // Already passed before
         }
 
         // 3. Update History
