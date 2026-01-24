@@ -15,6 +15,7 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
     const supabase = createClient();
     const { data: program } = await supabase
         .from("programs")
+        .select("*")
         .eq("id", params.id)
         .single();
 
