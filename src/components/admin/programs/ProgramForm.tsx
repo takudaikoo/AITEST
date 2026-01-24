@@ -635,23 +635,25 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
           </>
         )}
 
-        <div className="space-y-4 pt-6 border-t">
-          <h3 className="text-lg font-medium">問題選択</h3>
-          <QuestionSelector
-            questions={questions}
-            selectedIds={selectedQuestionIds}
-            onToggle={toggleQuestion}
-          />
-
-          <div className="pt-4 border-t">
-            <h4 className="text-sm font-medium mb-2">選択された問題の並び替え ({orderedQuestionIds.length}問)</h4>
-            <OrderedQuestionsList
-              questions={selectedQuestions}
-              onReorder={handleReorder}
-              onRemove={handleRemove}
+        {watchType !== 'lecture' && (
+          <div className="space-y-4 pt-6 border-t">
+            <h3 className="text-lg font-medium">問題選択</h3>
+            <QuestionSelector
+              questions={questions}
+              selectedIds={selectedQuestionIds}
+              onToggle={toggleQuestion}
             />
+
+            <div className="pt-4 border-t">
+              <h4 className="text-sm font-medium mb-2">選択された問題の並び替え ({orderedQuestionIds.length}問)</h4>
+              <OrderedQuestionsList
+                questions={selectedQuestions}
+                onReorder={handleReorder}
+                onRemove={handleRemove}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
 
         <Button type="submit" disabled={loading}>
