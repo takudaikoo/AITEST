@@ -64,12 +64,12 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
                 </div>
             </div>
 
-            <div className="rounded-lg bg-secondary/50 p-6 space-y-4">
-                <h3 className="font-semibold text-lg flex items-center gap-2">
+            <div className="rounded-lg border border-primary/20 bg-primary/10 p-6 space-y-4">
+                <h3 className="font-semibold text-lg flex items-center gap-2 text-primary">
                     <PlayCircle className="h-5 w-5" />
                     注意事項
                 </h3>
-                <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
+                <ul className="list-disc list-inside space-y-1 text-foreground text-sm font-medium">
                     <li>試験中はブラウザの「戻る」ボタンを使用しないでください。</li>
                     <li>制限時間を過ぎると自動的に終了となります。</li>
                     <li>通信環境の良い場所で受験してください。</li>
