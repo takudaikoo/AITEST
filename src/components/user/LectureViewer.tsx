@@ -1,11 +1,17 @@
 "use client";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2 } from "lucide-react";
+import { completeActivity } from "@/app/actions/gamification";
+import { toast } from "sonner";
 
 interface LectureViewerProps {
     historyId: string;
@@ -25,21 +31,25 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl }
         setIsCompleting(true);
 
         try {
-            await supabase.from("learning_history").update({
-                status: 'completed',
-                completed_at: new Date().toISOString(),
-                is_passed: true, // Lectures are always passed if completed
-                score: 100 // Full score for attendance
-            }).eq("id", historyId);
+            // Completed via Server Action
+            const result = await completeActivity(
+                historyId,
+                100, // Full score
+                true // Always passed
+            );
 
-            // Award XP (smaller amount for lecture?)
-            const { data: { user } } = await supabase.auth.getUser();
-            if (user) {
-                const { data: profile } = await supabase.from('profiles').select('xp').eq('id', user.id).single();
-                if (profile) {
-                    await supabase.from('profiles').update({
-                        xp: (profile.xp || 0) + 50 // 50XP for lecture
-                    }).eq('id', user.id);
+            if (!result.success) {
+                console.error(result.error);
+                toast.error("完了処理に失敗しました");
+            } else {
+                if (result.isRankUp) {
+                    toast.success(`🎉 ランクアップ！ ${result.newRank} に昇格しました！ (+${result.xpGained} XP)`, {
+                        duration: 5000,
+                    });
+                } else if (result.xpGained > 0) {
+                    toast.success(`お疲れ様でした！ +${result.xpGained} XP 獲得しました！`);
+                } else {
+                    toast.success("学習を完了しました！");
                 }
             }
 
@@ -69,8 +79,11 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl }
                         </div>
                     )}
 
-                    <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap leading-relaxed">
-                        {content || "コンテンツがありません。"}
+                    {/* Markdown Content */}
+                    <div className="prose dark:prose-invert max-w-none">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            {content || "コンテンツがありません。"}
+                        </ReactMarkdown>
                     </div>
                 </CardContent>
             </Card>

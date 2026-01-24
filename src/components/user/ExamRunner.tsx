@@ -12,7 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { createClient } from "@/lib/supabase/client";
 import { Loader2, AlertCircle, CheckCircle, XCircle, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
+import { completeActivity } from "@/app/actions/gamification";
+import { toast } from "sonner";
 
 interface ExamRunnerProps {
     historyId: string;
@@ -225,27 +228,31 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                 }
             }
 
-            // Update History
+            // Update History via Server Action (handles XP and Rank)
             const passed = obtainedScore >= 80; // Hardcoded or from program.passing_score
-            await supabase.from("learning_history").update({
-                score: Math.round(obtainedScore),
-                is_passed: passed,
-                status: 'completed',
-                completed_at: new Date().toISOString()
-            }).eq("id", historyId);
 
-            // Gamification: Award XP if passed
-            if (passed) {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    const xpGained = 100; // Fixed amount for now
-                    // Simple read-modify-write
-                    const { data: profile } = await supabase.from('profiles').select('xp').eq('id', user.id).single();
-                    if (profile) {
-                        await supabase.from('profiles').update({
-                            xp: (profile.xp || 0) + xpGained
-                        }).eq('id', user.id);
+            const result = await completeActivity(
+                historyId,
+                Math.round(obtainedScore),
+                passed
+            );
+
+            if (!result.success) {
+                console.error(result.error);
+                toast.error("結果の保存に失敗しました");
+            } else {
+                if (passed) {
+                    if (result.isRankUp) {
+                        toast.success(`🎉 ランクアップ！ ${result.newRank} に昇格しました！ (+${result.xpGained} XP)`, {
+                            duration: 5000,
+                        });
+                    } else if (result.xpGained > 0) {
+                        toast.success(`👏 合格！ +${result.xpGained} XP 獲得しました！`);
+                    } else {
+                        toast.success("試験完了！");
                     }
+                } else {
+                    toast.info("お疲れ様でした。不合格です。");
                 }
             }
 

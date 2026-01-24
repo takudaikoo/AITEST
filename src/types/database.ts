@@ -18,6 +18,7 @@ export type Program = {
     category: string | null;
     time_limit: number | null;
     passing_score: number | null;
+    xp_reward: number | null;
     is_active: boolean;
     content_body: string | null;
     start_date: string | null;

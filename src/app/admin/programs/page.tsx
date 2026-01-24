@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
+import { ProgramImportDialog } from "@/components/admin/programs/ProgramImportDialog";
+
 export default async function ProgramsPage() {
     const supabase = createClient();
     const { data: programs, error } = await supabase
@@ -23,12 +25,15 @@ export default async function ProgramsPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">プログラム管理</h2>
-                <Button asChild>
-                    <Link href="/admin/programs/new">
-                        <Plus className="mr-2 h-4 w-4" />
-                        新規作成
-                    </Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                    <ProgramImportDialog />
+                    <Button asChild>
+                        <Link href="/admin/programs/new">
+                            <Plus className="mr-2 h-4 w-4" />
+                            新規作成
+                        </Link>
+                    </Button>
+                </div>
             </div>
 
             <div className="rounded-md border bg-card">
