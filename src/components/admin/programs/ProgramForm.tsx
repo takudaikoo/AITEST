@@ -59,11 +59,8 @@ interface ProgramFormProps {
 }
 
 import { formatJST, parseAsJST } from "@/lib/date-utils";
-import { formatJST, parseAsJST } from "@/lib/date-utils";
 import { QuestionSelector } from "./QuestionSelector";
-import { formatJST, parseAsJST } from "@/lib/date-utils";
-import { parseAndValidateQuestions } from "@/lib/csv-import"; // Import parser
-import { QuestionSelector } from "./QuestionSelector";
+import { parseAndValidateQuestions } from "@/lib/csv-import";
 import { OrderedQuestionsList } from "./OrderedQuestionsList";
 
 // Helper: UTC string from DB -> JST string for Form (YYYY-MM-DDTHH:MM)
@@ -128,10 +125,6 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
 
   const handleReorder = (newOrder: string[]) => {
     setOrderedQuestionIds(newOrder);
-  };
-
-  const handleRemove = (id: string) => {
-    toggleQuestion(id); // Re-use toggle logic
   };
 
   const handleRemove = (id: string) => {
