@@ -27,7 +27,7 @@ export default async function AnalyticsPage() {
     // 4. Worst Questions
     // 'weaknesses' table query. Wrapped in try/catch or just simple query.
     // Assuming table exists. If not, this returns error which we can ignore or handle.
-    let worstQuestions = [];
+    let worstQuestions: any[] = [];
     try {
         const { data } = await supabase
             .from("weaknesses")
