@@ -18,7 +18,7 @@ export default async function AnalyticsPage() {
         .from("learning_history")
         .select(`
             id, score, is_passed, status, created_at, user_id,
-            profiles!inner ( id, full_name, department_id )
+            profiles ( id, full_name, department_id )
         `)
         .eq("status", "completed")
         .order("created_at", { ascending: false });
