@@ -111,7 +111,7 @@ export function ProgramImportDialog() {
                     // Force refresh (optional, but typical in server component parent)
                     window.location.reload();
                 },
-                error: (error) => {
+                error: (error: any) => {
                     console.error(error);
                     toast.error("CSVの解析に失敗しました");
                     setLoading(false);
