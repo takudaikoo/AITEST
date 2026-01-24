@@ -15,9 +15,13 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
     const supabase = createClient();
     const { data: program } = await supabase
         .from("programs")
-        .select("*")
         .eq("id", params.id)
         .single();
+
+    const { count: questionCount } = await supabase
+        .from('program_questions')
+        .select('*', { count: 'exact', head: true })
+        .eq('program_id', params.id);
 
     if (!program) {
         return notFound();
@@ -47,21 +51,24 @@ export default async function ProgramDetailPage({ params }: ProgramDetailPagePro
                         </div>
                     </div>
                 )}
-                <div className="flex items-center gap-4 rounded-lg border p-4 bg-card">
-                    <CheckCircle2 className="h-8 w-8 text-primary" />
-                    <div>
-                        <div className="font-medium">合格点</div>
-                        <div className="text-2xl font-bold">{program.passing_score || '-'}点</div>
+                {(program.passing_score !== null && program.passing_score > 0) && (
+                    <div className="flex items-center gap-4 rounded-lg border p-4 bg-card">
+                        <CheckCircle2 className="h-8 w-8 text-primary" />
+                        <div>
+                            <div className="font-medium">合格点</div>
+                            <div className="text-2xl font-bold">{program.passing_score}点</div>
+                        </div>
                     </div>
-                </div>
-                <div className="flex items-center gap-4 rounded-lg border p-4 bg-card">
-                    <FileText className="h-8 w-8 text-primary" />
-                    <div>
-                        <div className="font-medium">問題数</div>
-                        <div className="text-2xl font-bold">- 問</div>
-                        {/* Need to fetch count separately or use join */}
+                )}
+                {(questionCount !== null && questionCount > 0) && (
+                    <div className="flex items-center gap-4 rounded-lg border p-4 bg-card">
+                        <FileText className="h-8 w-8 text-primary" />
+                        <div>
+                            <div className="font-medium">問題数</div>
+                            <div className="text-2xl font-bold">{questionCount} 問</div>
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             <div className="rounded-lg border border-primary/20 bg-primary/10 p-6 space-y-4">
