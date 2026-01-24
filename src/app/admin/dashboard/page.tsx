@@ -1,10 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { createServiceClient } from "@/lib/supabase/service";
 import { format, subDays, isSameDay } from "date-fns";
 import { ja } from "date-fns/locale";
 import { DashboardClient } from "@/components/admin/dashboard/DashboardClient";
 
 export default async function AdminDashboard() {
-    const supabase = createClient();
+    const supabase = createServiceClient();
 
     // 1. Basic Stats
     const { count: usersCount } = await supabase
