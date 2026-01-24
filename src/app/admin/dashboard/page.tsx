@@ -1,16 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, FileCheck, BrainCircuit, TrendingUp } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { RecentActivityChart } from "@/components/admin/dashboard/RecentActivityChart";
+import { format, subDays, isSameDay } from "date-fns";
+import { ja } from "date-fns/locale";
 
 export default async function AdminDashboard() {
     const supabase = createClient();
 
-    // 1. Total Users
+    // 1. Basic Stats
     const { count: usersCount } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true });
 
-    // 2. Total Attempts & Completion Rate
     const { count: totalAttempts } = await supabase
         .from('learning_history')
         .select('*', { count: 'exact', head: true });
@@ -24,18 +26,16 @@ export default async function AdminDashboard() {
         ? Math.round(((completedCount || 0) / totalAttempts) * 100)
         : 0;
 
-    // 3. Average Rank Logic
-    // Fetch all user ranks
-    const { data: profiles } = await supabase
+    // 2. Average Rank Logic
+    const { data: allProfiles } = await supabase
         .from('profiles')
         .select('rank');
 
-    // Map Rank to Score: Beginner=1, Standard=2, Expert=3, Master=4
     let totalRankScore = 0;
     let rankCount = 0;
 
-    if (profiles) {
-        profiles.forEach(p => {
+    if (allProfiles) {
+        allProfiles.forEach(p => {
             if (p.rank) {
                 rankCount++;
                 if (p.rank === 'Master') totalRankScore += 4;
@@ -48,13 +48,70 @@ export default async function AdminDashboard() {
 
     const avgScore = rankCount > 0 ? totalRankScore / rankCount : 0;
     let avgRankLabel = "-";
-    if (avgScore >= 3.5) avgRankLabel = "S"; // Master avg
-    else if (avgScore >= 2.5) avgRankLabel = "A"; // Expert avg
-    else if (avgScore >= 1.5) avgRankLabel = "B"; // Standard avg
-    else if (avgScore > 0) avgRankLabel = "C"; // Beginner avg
+    if (avgScore >= 3.5) avgRankLabel = "S";
+    else if (avgScore >= 2.5) avgRankLabel = "A";
+    else if (avgScore >= 1.5) avgRankLabel = "B";
+    else if (avgScore > 0) avgRankLabel = "C";
 
-    // For "Top 20% is A Rank" -> We can just show distribution maybe? or leave dummy text or simple "Users: X"
-    // Let's rely on standard distribution text or just hide the subtext.
+    // 3. Department Ranking Logic
+    // Fetch departments
+    const { data: departments } = await supabase.from('departments').select('*');
+    // Fetch profiles with department
+    const { data: profileDepts } = await supabase.from('profiles').select('id, department_id');
+    // Fetch all completed history scores
+    const { data: histories } = await supabase
+        .from('learning_history')
+        .select('score, user_id')
+        .eq('status', 'completed')
+        .not('score', 'is', null);
+
+    // Map: UserID -> DeptID
+    const userDeptMap = new Map<string, string>();
+    profileDepts?.forEach(p => {
+        if (p.department_id) userDeptMap.set(p.id, p.department_id);
+    });
+
+    // Aggregate Scores by Dept
+    const deptStats = new Map<string, { total: number, count: number }>();
+
+    histories?.forEach(h => {
+        const deptId = userDeptMap.get(h.user_id);
+        if (deptId) {
+            const current = deptStats.get(deptId) || { total: 0, count: 0 };
+            deptStats.set(deptId, {
+                total: current.total + (h.score || 0),
+                count: current.count + 1
+            });
+        }
+    });
+
+    // Calculate Avg and Sort
+    const deptRanking = departments?.map(d => {
+        const stats = deptStats.get(d.id);
+        const avg = stats && stats.count > 0 ? Math.round(stats.total / stats.count) : 0;
+        return { name: d.name, avg, count: stats?.count || 0 };
+    }).sort((a, b) => b.avg - a.avg).slice(0, 5) || [];
+
+
+    // 4. Recent Activity Chart (Last 7 days)
+    const today = new Date();
+    const startDate = subDays(today, 6);
+    const { data: recentLogs } = await supabase
+        .from('learning_history')
+        .select('created_at')
+        .gte('created_at', startDate.toISOString())
+        .order('created_at', { ascending: true });
+
+    const chartData = [];
+    for (let i = 0; i < 7; i++) {
+        const date = subDays(today, 6 - i);
+        const dateStr = format(date, 'MM/dd', { locale: ja });
+
+        // Count logs for this day
+        const count = recentLogs?.filter(log => isSameDay(new Date(log.created_at), date)).length || 0;
+        chartData.push({ name: dateStr, total: count });
+    }
+
 
     return (
         <div className="space-y-6">
@@ -86,7 +143,7 @@ export default async function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{avgRankLabel}</div>
-                        <p className="text-xs text-muted-foreground">Master/Expert/Standard/Beginner 平均</p>
+                        <p className="text-xs text-muted-foreground">平均ランクスコア: {avgScore.toFixed(1)}</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -104,12 +161,10 @@ export default async function AdminDashboard() {
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <Card className="col-span-4">
                     <CardHeader>
-                        <CardTitle>最近の試験実施状況</CardTitle>
+                        <CardTitle>最近の試験実施状況 (過去7日間)</CardTitle>
                     </CardHeader>
-                    <CardContent>
-                        <div className="h-[200px] w-full bg-secondary/20 flex items-center justify-center rounded-md">
-                            <span className="text-muted-foreground">チャート実装予定</span>
-                        </div>
+                    <CardContent className="pl-2">
+                        <RecentActivityChart data={chartData} />
                     </CardContent>
                 </Card>
                 <Card className="col-span-3">
@@ -118,21 +173,16 @@ export default async function AdminDashboard() {
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            {/* Dummy for now or complex query needed. keeping static is safer unless calculating manually */}
-                            <div className="flex items-center">
-                                <div className="ml-4 space-y-1">
-                                    <p className="text-sm font-medium leading-none">開発部</p>
-                                    <p className="text-sm text-muted-foreground">平均スコア: 92点</p>
+                            {deptRanking.length === 0 && <p className="text-sm text-muted-foreground">データがありません</p>}
+                            {deptRanking.map((dept, index) => (
+                                <div key={dept.name} className="flex items-center">
+                                    <div className="ml-4 space-y-1">
+                                        <p className="text-sm font-medium leading-none">{dept.name}</p>
+                                        <p className="text-sm text-muted-foreground">平均スコア: {dept.avg}点</p>
+                                    </div>
+                                    <div className="ml-auto font-medium">{index + 1}位</div>
                                 </div>
-                                <div className="ml-auto font-medium">1位</div>
-                            </div>
-                            <div className="flex items-center">
-                                <div className="ml-4 space-y-1">
-                                    <p className="text-sm font-medium leading-none">営業部</p>
-                                    <p className="text-sm text-muted-foreground">平均スコア: 88点</p>
-                                </div>
-                                <div className="ml-auto font-medium">2位</div>
-                            </div>
+                            ))}
                         </div>
                     </CardContent>
                 </Card>
