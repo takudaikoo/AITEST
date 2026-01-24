@@ -56,6 +56,7 @@ const TIME_OPTIONS = Array.from({ length: 48 }, (_, i) => {
 
 interface ProgramFormProps {
   initialData?: Program;
+  defaultType?: 'test' | 'exam' | 'lecture';
 }
 
 import { formatJST, parseAsJST } from "@/lib/date-utils";
@@ -78,7 +79,7 @@ const fromJSTToISO = (jstString?: string | null) => {
   return date.toISOString();
 };
 
-export function ProgramForm({ initialData }: ProgramFormProps) {
+export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState<any[]>([]); // Use appropriate Type
@@ -276,7 +277,7 @@ export function ProgramForm({ initialData }: ProgramFormProps) {
     defaultValues: {
       title: initialData?.title || "",
       description: initialData?.description || "",
-      type: initialData?.type || "test",
+      type: initialData?.type || defaultType || "test",
       category: initialData?.category || "",
       time_limit: initialData?.time_limit || 0,
       passing_score: initialData?.passing_score || 80,
