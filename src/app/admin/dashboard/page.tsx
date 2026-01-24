@@ -128,7 +128,7 @@ export default async function AdminDashboard() {
                 avgRankLabel,
                 avgScore,
                 completionRate,
-                completedCount
+                completedCount: completedCount || 0
             }}
             chartData={chartData}
             rankings={{
