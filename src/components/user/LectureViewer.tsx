@@ -8,7 +8,6 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
-import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2 } from "lucide-react";
 import { completeActivity } from "@/app/actions/gamification";
 import { toast } from "sonner";
