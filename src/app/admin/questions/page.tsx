@@ -47,7 +47,7 @@ export default async function QuestionsPage() {
             <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold tracking-tight">問題管理</h2>
                 <div className="flex items-center gap-2">
-                    <QuestionImporter />
+                    {/* <QuestionImporter /> */}
                     {/* Manual add button - potentially linking to a new standalone question form page if needed, 
                         but for now let's focus on CSV or keep the modal logic if adaptable. 
                         Actually, user asked to separate screens. So a new /admin/questions/new page is best. 
@@ -61,50 +61,18 @@ export default async function QuestionsPage() {
                 </div>
             </div>
 
+            {/* DEBUG MODE */}
+            <div className="bg-slate-100 p-4 rounded overflow-auto max-h-[500px]">
+                <pre>{JSON.stringify(questions?.slice(0, 3), null, 2)}</pre>
+            </div>
+
+            {/* 
             <div className="rounded-md border bg-card">
                 <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="w-[400px]">問題文</TableHead>
-                            <TableHead>形式</TableHead>
-                            <TableHead>難易度</TableHead>
-                            <TableHead>配点</TableHead>
-                            <TableHead>作成日</TableHead>
-                            <TableHead>操作</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {questions?.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={5} className="h-24 text-center">
-                                    問題が登録されていません。
-                                </TableCell>
-                            </TableRow>
-                        )}
-                        {questions?.map((q) => (
-                            <TableRow key={q.id}>
-                                <TableCell className="font-medium truncate max-w-[400px]">{q.text}</TableCell>
-                                <TableCell>
-                                    <Badge variant="outline">
-                                        {q.question_type === 'single_choice' ? '単一選択' :
-                                            q.question_type === 'multiple_choice' ? '複数選択' : '記述式'}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>Lv.{q.difficulty}</TableCell>
-                                <TableCell>{q.points}点</TableCell>
-                                <TableCell>{new Date(q.created_at).toLocaleDateString()}</TableCell>
-                                <TableCell>
-                                    <Button variant="ghost" size="icon" asChild>
-                                        <Link href={`/admin/questions/${q.id}`}>
-                                            <Pencil className="h-4 w-4" />
-                                        </Link>
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+                  ... (commented out) ...
                 </Table>
-            </div>
+            </div> 
+            */}
         </div>
     );
 }
