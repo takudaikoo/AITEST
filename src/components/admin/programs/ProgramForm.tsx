@@ -44,7 +44,8 @@ const formSchema = z.object({
   content_body: z.string().optional(),
   start_date: z.string().optional().or(z.literal("")),
   end_date: z.string().optional().or(z.literal("")),
-  quiz_csv: z.string().optional(), // Add field
+  quiz_csv: z.string().optional(),
+  is_mandatory: z.boolean().default(false),
 });
 
 // 30分刻みの時間オプションを生成
@@ -238,7 +239,8 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
       content_body: initialData?.content_body || "",
       start_date: toJSTString(initialData?.start_date),
       end_date: toJSTString(initialData?.end_date),
-      quiz_csv: initialData?.quiz_csv || "", // Load initial CSV
+      quiz_csv: initialData?.quiz_csv || "",
+      is_mandatory: initialData?.is_mandatory || false,
     },
   });
 
@@ -359,6 +361,29 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
                   <Input placeholder="例: Security, AI" {...field} />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="is_mandatory"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow-sm">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>
+                    必修プログラム
+                  </FormLabel>
+                  <FormDescription>
+                    このプログラムを「学習推奨・必修」としてダッシュボードに表示します。
+                  </FormDescription>
+                </div>
               </FormItem>
             )}
           />
