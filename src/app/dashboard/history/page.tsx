@@ -79,7 +79,7 @@ export default async function HistoryPage() {
                                             {record.started_at && format(new Date(record.started_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
                                         </TableCell>
                                         <TableCell>
-                                            {record.score != null ? (
+                                            {(record.score != null && !isLecture) ? (
                                                 <span className="font-mono text-lg">{record.score}点</span>
                                             ) : (
                                                 <span className="text-muted-foreground">-</span>

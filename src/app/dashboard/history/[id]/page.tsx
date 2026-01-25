@@ -22,7 +22,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
         .from("learning_history")
         .select(`
       *,
-      programs ( title, passing_score ),
+      programs ( title, passing_score, type ),
       user_answers (
         question_id, is_correct, selected_option_id, text_answer,
         questions ( text, explanation, options (id, text, is_correct) )
@@ -36,28 +36,42 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
     // Calculate specific analytics if needed
     const passingScore = history.programs?.passing_score || 80;
     const isPassed = history.score >= passingScore;
+    const isLecture = history.programs?.type === 'lecture';
 
     return (
         <div className="max-w-4xl mx-auto py-8 space-y-8">
             <div className="flex items-center justify-between">
-                <h1 className="text-2xl font-bold">試験結果: {history.programs?.title}</h1>
+                <h1 className="text-2xl font-bold">
+                    {isLecture ? "受講結果" : "試験結果"}: {history.programs?.title}
+                </h1>
                 <Button variant="outline" asChild>
                     <Link href="/dashboard"><ArrowLeft className="mr-2 h-4 w-4" /> ダッシュボードへ</Link>
                 </Button>
             </div>
 
-            <Card className={isPassed ? "border-green-500 bg-green-50/10" : "border-red-500 bg-red-50/10"}>
+            <Card className={isLecture ? "border-blue-500 bg-blue-50/10" : (isPassed ? "border-green-500 bg-green-50/10" : "border-red-500 bg-red-50/10")}>
                 <CardContent className="flex flex-col items-center justify-center p-12 text-center space-y-4">
-                    {isPassed ? (
-                        <CheckCircle2 className="h-24 w-24 text-green-500" />
+                    {isLecture ? (
+                        <CheckCircle2 className="h-24 w-24 text-blue-500" />
                     ) : (
-                        <XCircle className="h-24 w-24 text-red-500" />
+                        isPassed ? (
+                            <CheckCircle2 className="h-24 w-24 text-green-500" />
+                        ) : (
+                            <XCircle className="h-24 w-24 text-red-500" />
+                        )
                     )}
-                    <h2 className="text-4xl font-extrabold">{history.score}点</h2>
+
+                    {!isLecture && <h2 className="text-4xl font-extrabold">{history.score}点</h2>}
+
                     <div className="text-xl font-medium">
-                        {isPassed ? <span className="text-green-500">合格！おめでとうございます</span> : <span className="text-red-500">不合格... 再挑戦しましょう</span>}
+                        {isLecture ? (
+                            <span className="text-blue-500">学習済み</span>
+                        ) : (
+                            isPassed ? <span className="text-green-500">合格！おめでとうございます</span> : <span className="text-red-500">不合格... 再挑戦しましょう</span>
+                        )}
                     </div>
-                    <p className="text-muted-foreground">合格ライン: {passingScore}点</p>
+
+                    {!isLecture && <p className="text-muted-foreground">合格ライン: {passingScore}点</p>}
                 </CardContent>
             </Card>
 
