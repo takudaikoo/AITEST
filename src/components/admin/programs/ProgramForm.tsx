@@ -133,22 +133,20 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
   };
 
   const [isExtracting, setIsExtracting] = useState(false);
+  const [questionCsvContent, setQuestionCsvContent] = useState("");
 
   const handleExtractQuestions = async () => {
-    const currentContent = form.getValues("content_body");
-    if (!currentContent) return;
-
-    // Regex to find ```csv ... ``` block
-    // Matches carefully to avoid greedy capture
-    const csvBlockRegex = /```csv\n([\s\S]*?)\n```/;
-    const match = currentContent.match(csvBlockRegex);
-
-    if (!match) {
-      alert("CSV形式の問題データが見つかりませんでした。\n```csv\n...内容...\n```\nの形式で記述してください。");
+    if (!questionCsvContent) {
+      alert("問題データが入力されていません。");
       return;
     }
 
-    const csvContent = match[1];
+    if (!confirm("入力されたCSVデータから問題を登録しますか？")) {
+      return;
+    }
+
+    // Use the content directly
+    const csvContent = questionCsvContent;
 
     if (!confirm("テキストから問題を抽出し、データベースに登録しますか？\n(抽出されたCSVブロックは本文から削除されます)")) {
       return;
@@ -201,186 +199,341 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
         setQuestions(prev => [...insertedQuestions, ...prev]);
       }
 
-      // 4. Clean up Markdown
-      const cleanedContent = currentContent.replace(match[0], "").trim();
-      form.setValue("content_body", cleanedContent);
-
-      alert(`${insertedQuestions?.length}問の問題を抽出・登録しました！`);
-
-    } catch (e: any) {
-      console.error(e);
-      alert("エラーが発生しました: " + e.message);
-    } finally {
-      setIsExtracting(false);
-    }
-  };
-
-  // Prepare ordered question objects for the list
-  const selectedQuestions = orderedQuestionIds
-    .map(id => questions.find(q => q.id === id))
-    .filter(q => q !== undefined) as Question[];
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [uploading, setUploading] = useState(false);
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // File validation
-    if (!file.type.startsWith("image/")) {
-      alert("画像ファイルを選択してください");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      alert("5MB以下の画像を選択してください");
-      return;
+      // Update the local questions list to include new ones immediately
+      setQuestions(prev => [...insertedQuestions, ...prev]);
+      setQuestionCsvContent(""); // Clear the csv input after success
     }
 
-    setUploading(true);
-    try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
-      const filePath = `program-images/${fileName}`;
+      alert(`${insertedQuestions?.length}問の問題を登録しました！`);
 
-      const { error: uploadError } = await supabase.storage
-        .from('lecture-assets')
-        .upload(filePath, file);
+  } catch (e: any) {
+    console.error(e);
+    alert("エラーが発生しました: " + e.message);
+  } finally {
+    setIsExtracting(false);
+  }
+};
 
-      if (uploadError) throw uploadError;
+// Prepare ordered question objects for the list
+const selectedQuestions = orderedQuestionIds
+  .map(id => questions.find(q => q.id === id))
+  .filter(q => q !== undefined) as Question[];
 
-      const { data: { publicUrl } } = supabase.storage
-        .from('lecture-assets')
-        .getPublicUrl(filePath);
+const fileInputRef = useRef<HTMLInputElement>(null);
+const [uploading, setUploading] = useState(false);
 
-      // Insert markdown at cursor or append
-      const markdown = `\n![${file.name}](${publicUrl})\n`;
-      const currentContent = form.getValues("content_body") || "";
+const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-      // Simple append for now as getting cursor pos in RHF can be tricky without ref access to exact input
-      // But we can try to append
-      form.setValue("content_body", currentContent + markdown);
-
-    } catch (error: any) {
-      console.error(error);
-      alert("アップロードに失敗しました: " + error.message);
-    } finally {
-      setUploading(false);
-      // Reset input
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema) as any,
-    defaultValues: {
-      title: initialData?.title || "",
-      description: initialData?.description || "",
-      type: initialData?.type || defaultType || "test",
-      category: initialData?.category || "",
-      time_limit: initialData?.time_limit || 0,
-      passing_score: initialData?.passing_score || 80,
-      xp_reward: initialData?.xp_reward || 0,
-      content_body: initialData?.content_body || "",
-      start_date: toJSTString(initialData?.start_date),
-      end_date: toJSTString(initialData?.end_date),
-    },
-  });
-
-  const watchType = form.watch("type");
-
-  // Auto-set default XP based on Type if adding new
-  useEffect(() => {
-    if (!initialData) {
-      if (watchType === 'lecture') form.setValue('xp_reward', 10);
-      else if (watchType === 'test') form.setValue('xp_reward', 50);
-      else if (watchType === 'exam') form.setValue('xp_reward', 100);
-    }
-  }, [watchType, initialData, form]);
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setLoading(true);
-    try {
-      const payload = {
-        ...values,
-        start_date: values.start_date ? fromJSTToISO(values.start_date) : null,
-        end_date: values.end_date ? fromJSTToISO(values.end_date) : null,
-      };
-
-      const programId = initialData ? initialData.id : (await supabase.from("programs").insert([payload]).select().single()).data?.id;
-
-      if (!programId) throw new Error("Program ID unavailable");
-
-      // Update basic info if editing
-      if (initialData) {
-        const { error: updateError } = await supabase.from("programs").update(payload).eq("id", programId);
-        if (updateError) throw updateError;
-      }
-
-      // Update Question Links (Full Replace Strategy for simplicity)
-      // 1. Delete all existing
-      await supabase.from("program_questions").delete().eq("program_id", programId);
-
-      // 2. Insert new selections
-      // Use orderedQuestionIds to determine the order
-      const links = orderedQuestionIds.map((qid, index) => ({
-        program_id: programId,
-        question_id: qid,
-        question_number: index + 1
-      }));
-
-      if (links.length > 0) {
-        const { error: linkError } = await supabase.from("program_questions").insert(links);
-        if (linkError) throw linkError;
-      }
-
-      router.push("/admin/programs");
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("エラーが発生しました");
-    } finally {
-      setLoading(false);
-    }
+  // File validation
+  if (!file.type.startsWith("image/")) {
+    alert("画像ファイルを選択してください");
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    alert("5MB以下の画像を選択してください");
+    return;
   }
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-2xl">
+  setUploading(true);
+  try {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`;
+    const filePath = `program-images/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('lecture-assets')
+      .upload(filePath, file);
+
+    if (uploadError) throw uploadError;
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('lecture-assets')
+      .getPublicUrl(filePath);
+
+    // Insert markdown at cursor or append
+    const markdown = `\n![${file.name}](${publicUrl})\n`;
+    const currentContent = form.getValues("content_body") || "";
+
+    // Simple append for now as getting cursor pos in RHF can be tricky without ref access to exact input
+    // But we can try to append
+    form.setValue("content_body", currentContent + markdown);
+
+  } catch (error: any) {
+    console.error(error);
+    alert("アップロードに失敗しました: " + error.message);
+  } finally {
+    setUploading(false);
+    // Reset input
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }
+};
+
+
+const form = useForm<z.infer<typeof formSchema>>({
+  resolver: zodResolver(formSchema) as any,
+  defaultValues: {
+    title: initialData?.title || "",
+    description: initialData?.description || "",
+    type: initialData?.type || defaultType || "test",
+    category: initialData?.category || "",
+    time_limit: initialData?.time_limit || 0,
+    passing_score: initialData?.passing_score || 80,
+    xp_reward: initialData?.xp_reward || 0,
+    content_body: initialData?.content_body || "",
+    start_date: toJSTString(initialData?.start_date),
+    end_date: toJSTString(initialData?.end_date),
+  },
+});
+
+const watchType = form.watch("type");
+
+// Auto-set default XP based on Type if adding new
+useEffect(() => {
+  if (!initialData) {
+    if (watchType === 'lecture') form.setValue('xp_reward', 10);
+    else if (watchType === 'test') form.setValue('xp_reward', 50);
+    else if (watchType === 'exam') form.setValue('xp_reward', 100);
+  }
+}, [watchType, initialData, form]);
+
+async function onSubmit(values: z.infer<typeof formSchema>) {
+  setLoading(true);
+  try {
+    const payload = {
+      ...values,
+      start_date: values.start_date ? fromJSTToISO(values.start_date) : null,
+      end_date: values.end_date ? fromJSTToISO(values.end_date) : null,
+    };
+
+    const programId = initialData ? initialData.id : (await supabase.from("programs").insert([payload]).select().single()).data?.id;
+
+    if (!programId) throw new Error("Program ID unavailable");
+
+    // Update basic info if editing
+    if (initialData) {
+      const { error: updateError } = await supabase.from("programs").update(payload).eq("id", programId);
+      if (updateError) throw updateError;
+    }
+
+    // Update Question Links (Full Replace Strategy for simplicity)
+    // 1. Delete all existing
+    await supabase.from("program_questions").delete().eq("program_id", programId);
+
+    // 2. Insert new selections
+    // Use orderedQuestionIds to determine the order
+    const links = orderedQuestionIds.map((qid, index) => ({
+      program_id: programId,
+      question_id: qid,
+      question_number: index + 1
+    }));
+
+    if (links.length > 0) {
+      const { error: linkError } = await supabase.from("program_questions").insert(links);
+      if (linkError) throw linkError;
+    }
+
+    router.push("/admin/programs");
+    router.refresh();
+  } catch (error) {
+    console.error(error);
+    alert("エラーが発生しました");
+  } finally {
+    setLoading(false);
+  }
+}
+
+return (
+  <Form {...form}>
+    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-2xl">
+      <FormField
+        control={form.control}
+        name="title"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>タイトル</FormLabel>
+            <FormControl>
+              <Input placeholder="例: 情報セキュリティ基礎テスト" {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="grid grid-cols-2 gap-4">
         <FormField
           control={form.control}
-          name="title"
+          name="type"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>タイトル</FormLabel>
-              <FormControl>
-                <Input placeholder="例: 情報セキュリティ基礎テスト" {...field} />
-              </FormControl>
+              <FormLabel>タイプ</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!initialData}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="タイプを選択" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="test">小テスト (Test)</SelectItem>
+                  <SelectItem value="exam">試験 (Exam)</SelectItem>
+                  <SelectItem value="lecture">講習 (Lecture)</SelectItem>
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>カテゴリー</FormLabel>
+              <FormControl>
+                <Input placeholder="例: Security, AI" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      <FormField
+        control={form.control}
+        name="description"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>説明</FormLabel>
+            <FormControl>
+              <Textarea placeholder="プログラムの説明を入力..." {...field} />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          control={form.control}
+          name="start_date"
+          render={({ field }) => {
+            // 値のパース (YYYY-MM-DDTHH:MM or Empty)
+            // 時間が保存されていない場合はデフォルト09:00などにするか、あるいは空にするか
+            // ここでは値を分解して管理
+            const dateVal = field.value ? field.value.split("T")[0] : "";
+            const timeVal = (field.value && field.value.includes("T")) ? field.value.split("T")[1].slice(0, 5) : "00:00";
+
+            const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+              const newDate = e.target.value;
+              if (!newDate) {
+                field.onChange(""); // クリア
+                return;
+              }
+              // 日付変更時、時間は既存のものを使うかデフォルト
+              field.onChange(`${newDate}T${timeVal}`);
+            };
+
+            const handleTimeChange = (newTime: string) => {
+              // 日付が未選択の場合どうするか？今のところ日付選択を強制するUIではないが
+              // 日付が入ってないなら日付も入れさせるべきだが、とりあえず日付未入力なら何もしないか、
+              // あるいは空のDate+Timeは作れないので無視
+              if (!dateVal) return;
+              field.onChange(`${dateVal}T${newTime}`);
+            };
+
+            return (
+              <FormItem>
+                <FormLabel>開始日時</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={dateVal}
+                      onChange={handleDateChange}
+                      className=""
+                    />
+                  </FormControl>
+                  <Select value={timeVal} onValueChange={handleTimeChange}>
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="時間" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+        <FormField
+          control={form.control}
+          name="end_date"
+          render={({ field }) => {
+            const dateVal = field.value ? field.value.split("T")[0] : "";
+            const timeVal = (field.value && field.value.includes("T")) ? field.value.split("T")[1].slice(0, 5) : "00:00";
+
+            const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+              const newDate = e.target.value;
+              if (!newDate) {
+                field.onChange("");
+                return;
+              }
+              field.onChange(`${newDate}T${timeVal}`);
+            };
+
+            const handleTimeChange = (newTime: string) => {
+              if (!dateVal) return;
+              field.onChange(`${dateVal}T${newTime}`);
+            };
+
+            return (
+              <FormItem>
+                <FormLabel>終了日時</FormLabel>
+                <div className="flex gap-2">
+                  <FormControl>
+                    <Input
+                      type="date"
+                      value={dateVal}
+                      onChange={handleDateChange}
+                      className=""
+                    />
+                  </FormControl>
+                  <Select value={timeVal} onValueChange={handleTimeChange}>
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue placeholder="時間" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-[200px]">
+                      {TIME_OPTIONS.map((t) => (
+                        <SelectItem key={t} value={t}>{t}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <FormMessage />
+              </FormItem>
+            );
+          }}
+        />
+      </div>
+
+      {watchType !== 'lecture' && (
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="type"
+            name="time_limit"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>タイプ</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value} disabled={!!initialData}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="タイプを選択" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="test">小テスト (Test)</SelectItem>
-                    <SelectItem value="exam">試験 (Exam)</SelectItem>
-                    <SelectItem value="lecture">講習 (Lecture)</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel>制限時間 (分)</FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormDescription>0の場合は無制限</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -388,279 +541,142 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
 
           <FormField
             control={form.control}
-            name="category"
+            name="passing_score"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>カテゴリー</FormLabel>
+                <FormLabel>合格点</FormLabel>
                 <FormControl>
-                  <Input placeholder="例: Security, AI" {...field} />
+                  <Input type="number" max={100} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-        </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>説明</FormLabel>
-              <FormControl>
-                <Textarea placeholder="プログラムの説明を入力..." {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
-            name="start_date"
-            render={({ field }) => {
-              // 値のパース (YYYY-MM-DDTHH:MM or Empty)
-              // 時間が保存されていない場合はデフォルト09:00などにするか、あるいは空にするか
-              // ここでは値を分解して管理
-              const dateVal = field.value ? field.value.split("T")[0] : "";
-              const timeVal = (field.value && field.value.includes("T")) ? field.value.split("T")[1].slice(0, 5) : "00:00";
-
-              const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                const newDate = e.target.value;
-                if (!newDate) {
-                  field.onChange(""); // クリア
-                  return;
-                }
-                // 日付変更時、時間は既存のものを使うかデフォルト
-                field.onChange(`${newDate}T${timeVal}`);
-              };
-
-              const handleTimeChange = (newTime: string) => {
-                // 日付が未選択の場合どうするか？今のところ日付選択を強制するUIではないが
-                // 日付が入ってないなら日付も入れさせるべきだが、とりあえず日付未入力なら何もしないか、
-                // あるいは空のDate+Timeは作れないので無視
-                if (!dateVal) return;
-                field.onChange(`${dateVal}T${newTime}`);
-              };
-
-              return (
-                <FormItem>
-                  <FormLabel>開始日時</FormLabel>
-                  <div className="flex gap-2">
-                    <FormControl>
-                      <Input
-                        type="date"
-                        value={dateVal}
-                        onChange={handleDateChange}
-                        className=""
-                      />
-                    </FormControl>
-                    <Select value={timeVal} onValueChange={handleTimeChange}>
-                      <SelectTrigger className="w-[120px]">
-                        <SelectValue placeholder="時間" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-[200px]">
-                        {TIME_OPTIONS.map((t) => (
-                          <SelectItem key={t} value={t}>{t}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-          <FormField
-            control={form.control}
-            name="end_date"
-            render={({ field }) => {
-              const dateVal = field.value ? field.value.split("T")[0] : "";
-              const timeVal = (field.value && field.value.includes("T")) ? field.value.split("T")[1].slice(0, 5) : "00:00";
-
-              const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                const newDate = e.target.value;
-                if (!newDate) {
-                  field.onChange("");
-                  return;
-                }
-                field.onChange(`${newDate}T${timeVal}`);
-              };
-
-              const handleTimeChange = (newTime: string) => {
-                if (!dateVal) return;
-                field.onChange(`${dateVal}T${newTime}`);
-              };
-
-              return (
-                <FormItem>
-                  <FormLabel>終了日時</FormLabel>
-                  <div className="flex gap-2">
-                    <FormControl>
-                      <Input
-                        type="date"
-                        value={dateVal}
-                        onChange={handleDateChange}
-                        className=""
-                      />
-                    </FormControl>
-                    <Select value={timeVal} onValueChange={handleTimeChange}>
-                      <SelectTrigger className="w-[120px]">
-                        <SelectValue placeholder="時間" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-[200px]">
-                        {TIME_OPTIONS.map((t) => (
-                          <SelectItem key={t} value={t}>{t}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
+            name="xp_reward"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>獲得XP</FormLabel>
+                <FormControl>
+                  <Input type="number" {...field} />
+                </FormControl>
+                <FormDescription>合格時に付与される経験値</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
+      )}
 
-        {watchType !== 'lecture' && (
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="time_limit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>制限時間 (分)</FormLabel>
-                  <FormControl>
-                    <Input type="number" {...field} />
-                  </FormControl>
-                  <FormDescription>0の場合は無制限</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="passing_score"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>合格点</FormLabel>
-                  <FormControl>
-                    <Input type="number" max={100} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
+      {watchType === 'lecture' && (
+        <>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <FormField
               control={form.control}
               name="xp_reward"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>獲得XP</FormLabel>
+                  <FormLabel>獲得XP (受講完了時)</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
-                  <FormDescription>合格時に付与される経験値</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-        )}
+          <FormField
+            control={form.control}
+            name="content_body"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel>講習内容 (Markdown)</FormLabel>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={uploading || isExtracting}
+                    onClick={() => fileInputRef.current?.click()}
+                    className="gap-2"
+                  >
+                    {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
+                    画像を追加
+                  </Button>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                  />
+                </div>
+                <FormControl>
+                  <Textarea className="min-h-[400px] font-mono text-sm leading-relaxed" placeholder="# 大見出し&#13;&#10;## 中見出し&#13;&#10;- リスト1&#13;&#10;- リスト2" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        {watchType === 'lecture' && (
-          <>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <FormField
-                control={form.control}
-                name="xp_reward"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>獲得XP (受講完了時)</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormItem>
+            <div className="flex items-center justify-between">
+              <FormLabel>問題データ入力 (CSV形式)</FormLabel>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={isExtracting}
+                onClick={handleExtractQuestions}
+                className="gap-2 ml-2"
+              >
+                {isExtracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+                問題を登録・プレビュー
+              </Button>
             </div>
-            <FormField
-              control={form.control}
-              name="content_body"
-              render={({ field }) => (
-                <FormItem>
-                  <div className="flex items-center justify-between">
-                    <FormLabel>講習内容 (Markdown)</FormLabel>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      disabled={uploading || isExtracting}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="gap-2"
-                    >
-                      {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ImageIcon className="h-4 w-4" />}
-                      画像を追加
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      disabled={isExtracting}
-                      onClick={handleExtractQuestions}
-                      className="gap-2 ml-2"
-                    >
-                      {isExtracting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
-                      テキストから問題を抽出
-                    </Button>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      className="hidden"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                    />
-                  </div>
-                  <FormControl>
-                    <Textarea className="min-h-[400px] font-mono text-sm leading-relaxed" placeholder="# 大見出し&#13;&#10;## 中見出し&#13;&#10;- リスト1&#13;&#10;- リスト2" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </>
-        )}
-
-        {watchType !== 'lecture' && (
-          <div className="space-y-4 pt-6 border-t">
-            <h3 className="text-lg font-medium">問題選択</h3>
-            <QuestionSelector
-              questions={questions}
-              selectedIds={selectedQuestionIds}
-              onToggle={toggleQuestion}
-            />
-
-            <div className="pt-4 border-t">
-              <h4 className="text-sm font-medium mb-2">選択された問題の並び替え ({orderedQuestionIds.length}問)</h4>
-              <OrderedQuestionsList
-                questions={selectedQuestions}
-                onReorder={handleReorder}
-                onRemove={handleRemove}
+            <FormControl>
+              <Textarea
+                className="min-h-[200px] font-mono text-sm leading-relaxed"
+                placeholder="content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points&#13;&#10;これは問題です,single_choice,あ,い,う,え,1,解説です,1,10"
+                value={questionCsvContent}
+                onChange={(e) => setQuestionCsvContent(e.target.value)}
               />
-            </div>
+            </FormControl>
+            <FormDescription>
+              ヘッダー行が必要です: content, question_type, option_1...
+            </FormDescription>
+          </FormItem>
+        </>
+      )}
+
+      {watchType !== 'lecture' && (
+        <div className="space-y-4 pt-6 border-t">
+          <h3 className="text-lg font-medium">問題選択</h3>
+          <QuestionSelector
+            questions={questions}
+            selectedIds={selectedQuestionIds}
+            onToggle={toggleQuestion}
+          />
+
+          <div className="pt-4 border-t">
+            <h4 className="text-sm font-medium mb-2">選択された問題の並び替え ({orderedQuestionIds.length}問)</h4>
+            <OrderedQuestionsList
+              questions={selectedQuestions}
+              onReorder={handleReorder}
+              onRemove={handleRemove}
+            />
           </div>
-        )}
+        </div>
+      )}
 
 
-        <Button type="submit" disabled={loading}>
-          {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          保存
-        </Button>
-      </form>
-    </Form>
-  );
+      <Button type="submit" disabled={loading}>
+        {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+        保存
+      </Button>
+    </form>
+  </Form>
+);
 }
