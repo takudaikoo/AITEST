@@ -16,11 +16,31 @@ import { QuestionImporter } from "../../../components/admin/questions/QuestionIm
 export default async function QuestionsPage() {
     const supabase = createClient();
 
-    // Fetch all questions
-    const { data: questions, error } = await supabase
-        .from("questions")
-        .select("*")
-        .order("created_at", { ascending: false });
+    let questions: any[] | null = [];
+    let fetchError = null;
+
+    try {
+        // Fetch all questions
+        const { data, error } = await supabase
+            .from("questions")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+        questions = data;
+    } catch (e: any) {
+        console.error("Questions Fetch Error:", e);
+        fetchError = e.message || JSON.stringify(e);
+    }
+
+    if (fetchError) {
+        return (
+            <div className="p-8 text-center">
+                <h2 className="text-xl font-bold text-red-600 mb-2">エラーが発生しました</h2>
+                <p className="text-muted-foreground">{fetchError}</p>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
