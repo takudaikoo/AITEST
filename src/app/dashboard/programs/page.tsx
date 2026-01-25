@@ -1,4 +1,4 @@
-"use client";
+
 
 import { ProgramFilters } from "@/components/user/programs/ProgramFilters";
 import { PaginationControls } from "@/components/ui/PaginationControls";
