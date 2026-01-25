@@ -25,6 +25,7 @@ export type Program = {
     end_date: string | null;
     created_by: string | null;
     created_at: string;
+    quiz_csv: string | null;
 };
 
 export type Question = {

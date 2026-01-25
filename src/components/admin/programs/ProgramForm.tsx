@@ -44,7 +44,7 @@ const formSchema = z.object({
   content_body: z.string().optional(),
   start_date: z.string().optional().or(z.literal("")),
   end_date: z.string().optional().or(z.literal("")),
-
+  quiz_csv: z.string().optional(), // Add field
 });
 
 // 30分刻みの時間オプションを生成
@@ -133,7 +133,7 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
   };
 
   const [isExtracting, setIsExtracting] = useState(false);
-  const [questionCsvContent, setQuestionCsvContent] = useState("");
+  const [questionCsvContent, setQuestionCsvContent] = useState(initialData?.quiz_csv || "");
 
   const handleExtractQuestions = async () => {
     if (!questionCsvContent) {
@@ -141,91 +141,24 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
       return;
     }
 
-    if (!confirm("入力されたCSVデータから問題を登録しますか？")) {
-      return;
-    }
-
     // Use the content directly
     const csvContent = questionCsvContent;
 
-    if (!confirm("テキストから問題を抽出し、データベースに登録しますか？\n(抽出されたCSVブロックは本文から削除されます)")) {
-      return;
-    }
-
+    // Validate CSV only - do NOT insert into DB
     setIsExtracting(true);
     try {
-      // 1. Parse CSV
       const result = await parseAndValidateQuestions(csvContent);
       if (result.errors.length > 0) {
         alert("CSV解析エラー:\n" + result.errors.join("\n"));
         return;
       }
-
       if (result.data.length === 0) {
         alert("有効な問題が見つかりませんでした。");
         return;
       }
 
-      // 2. Insert to DB
-      // Generate IDs client-side to allow bulk insertion of options
-      const questionsToInsert = result.data.map(q => ({
-        id: crypto.randomUUID(),
-        text: q.content,
-        question_type: q.question_type,
-        explanation: q.explanation,
-        difficulty: q.difficulty,
-        points: q.points,
-        tags: q.tags,
-        category: q.category,
-        image_url: q.image_url
-      }));
-
-      const optionsToInsert: any[] = [];
-      result.data.forEach((q, index) => {
-        if (q.question_type !== 'text') {
-          const qId = questionsToInsert[index].id;
-          q.options.forEach((optText, optIdx) => {
-            optionsToInsert.push({
-              question_id: qId,
-              text: optText,
-              is_correct: q.correct_indices.includes(optIdx + 1)
-            });
-          });
-        }
-      });
-
-      // Bulk insert questions
-      const { data: insertedQuestions, error: insertError } = await supabase
-        .from('questions')
-        .insert(questionsToInsert)
-        .select();
-
-      if (insertError) throw insertError;
-
-      // Bulk insert options
-      if (optionsToInsert.length > 0) {
-        const { error: optionsError } = await supabase
-          .from('options')
-          .insert(optionsToInsert);
-
-        if (optionsError) throw optionsError;
-      }
-
-      // 3. Update State (Select these new questions)
-      if (insertedQuestions) {
-        const newIds = insertedQuestions.map(q => q.id);
-        setOrderedQuestionIds(prev => [...prev, ...newIds]);
-        setSelectedQuestionIds(prev => {
-          const next = new Set(prev);
-          newIds.forEach(id => next.add(id));
-          return next;
-        });
-        // Update the local questions list to include new ones immediately
-        setQuestions(prev => [...insertedQuestions, ...prev]);
-        setQuestionCsvContent(""); // Clear the csv input after success
-      }
-
-      alert(`${insertedQuestions?.length}問の問題を登録しました！`);
+      // Preview count
+      alert(`CSVの検証に成功しました！\n${result.data.length}問の問題が含まれています。\n「保存」ボタンを押すと、この講習専用の問題として登録されます。`);
 
     } catch (e: any) {
       console.error(e);
@@ -305,8 +238,14 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
       content_body: initialData?.content_body || "",
       start_date: toJSTString(initialData?.start_date),
       end_date: toJSTString(initialData?.end_date),
+      quiz_csv: initialData?.quiz_csv || "", // Load initial CSV
     },
   });
+
+  // Sync state with form for CSV content
+  useEffect(() => {
+    form.setValue("quiz_csv", questionCsvContent);
+  }, [questionCsvContent, form]);
 
   const watchType = form.watch("type");
 
@@ -339,20 +278,24 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
       }
 
       // Update Question Links (Full Replace Strategy for simplicity)
-      // 1. Delete all existing
-      await supabase.from("program_questions").delete().eq("program_id", programId);
+      // If type is lecture, we might NOT want to use the questions table relation at all?
+      // But user said "don't import to global list". So we rely on quiz_csv.
+      // However, if we do have questions selected (e.g. for non-lecture), we save them.
+      if (values.type !== 'lecture') {
+        // 1. Delete all existing
+        await supabase.from("program_questions").delete().eq("program_id", programId);
 
-      // 2. Insert new selections
-      // Use orderedQuestionIds to determine the order
-      const links = orderedQuestionIds.map((qid, index) => ({
-        program_id: programId,
-        question_id: qid,
-        question_number: index + 1
-      }));
+        // 2. Insert new selections
+        const links = orderedQuestionIds.map((qid, index) => ({
+          program_id: programId,
+          question_id: qid,
+          question_number: index + 1
+        }));
 
-      if (links.length > 0) {
-        const { error: linkError } = await supabase.from("program_questions").insert(links);
-        if (linkError) throw linkError;
+        if (links.length > 0) {
+          const { error: linkError } = await supabase.from("program_questions").insert(links);
+          if (linkError) throw linkError;
+        }
       }
 
       router.push("/admin/programs");
