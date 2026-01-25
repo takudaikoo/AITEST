@@ -46,6 +46,7 @@ const formSchema = z.object({
   end_date: z.string().optional().or(z.literal("")),
   quiz_csv: z.string().optional(),
   is_mandatory: z.boolean().default(false),
+  level_requirement: z.number().min(1).max(10).default(1),
 });
 
 // 30分刻みの時間オプションを生成
@@ -241,6 +242,7 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
       end_date: toJSTString(initialData?.end_date),
       quiz_csv: initialData?.quiz_csv || "",
       is_mandatory: initialData?.is_mandatory || false,
+      level_requirement: initialData?.level_requirement || 1,
     },
   });
 

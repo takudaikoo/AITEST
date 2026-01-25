@@ -2,12 +2,10 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-const RANK_THRESHOLDS = [
-    { name: "Master", min: 5000 },
-    { name: "Expert", min: 1000 },
-    { name: "Standard", min: 200 },
-    { name: "Beginner", min: 0 }
-];
+import { calculateLevel } from "@/lib/level-utils";
+
+// Removed local RANK_THRESHOLDS in favor of shared level-utils
+
 
 export interface CompletionResult {
     success: boolean;
@@ -117,9 +115,8 @@ export async function completeActivity(
                 const currentXp = profile.xp || 0;
                 const newXp = currentXp + xpReward;
 
-                // Calculate Rank
-                const rankObj = RANK_THRESHOLDS.find(r => newXp >= r.min) || RANK_THRESHOLDS[3]; // Fallback to Beginner
-                const calculatedRank = rankObj.name;
+                // Calculate Rank using shared logic
+                const { rank: calculatedRank } = calculateLevel(newXp);
 
                 if (calculatedRank !== profile.rank) {
                     newRank = calculatedRank;

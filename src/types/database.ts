@@ -27,6 +27,7 @@ export type Program = {
     created_at: string;
     quiz_csv: string | null;
     is_mandatory: boolean;
+    level_requirement: number;
 };
 
 export type Question = {
