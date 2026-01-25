@@ -167,24 +167,49 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
       }
 
       // 2. Insert to DB
-      // We need users ID for 'created_by' if adhering to RLS, but currently simplified
+      // Generate IDs client-side to allow bulk insertion of options
+      const questionsToInsert = result.data.map(q => ({
+        id: crypto.randomUUID(),
+        text: q.content,
+        question_type: q.question_type,
+        explanation: q.explanation,
+        difficulty: q.difficulty,
+        points: q.points,
+        tags: q.tags,
+        category: q.category,
+        image_url: q.image_url
+      }));
+
+      const optionsToInsert: any[] = [];
+      result.data.forEach((q, index) => {
+        if (q.question_type !== 'text') {
+          const qId = questionsToInsert[index].id;
+          q.options.forEach((optText, optIdx) => {
+            optionsToInsert.push({
+              question_id: qId,
+              text: optText,
+              is_correct: q.correct_indices.includes(optIdx + 1)
+            });
+          });
+        }
+      });
+
+      // Bulk insert questions
       const { data: insertedQuestions, error: insertError } = await supabase
         .from('questions')
-        .insert(result.data.map(q => ({
-          text: q.content,
-          question_type: q.question_type,
-          options: q.options,
-          correct_indices: q.correct_indices,
-          explanation: q.explanation,
-          difficulty: q.difficulty,
-          points: q.points,
-          tags: q.tags,
-          category: q.category,
-          image_url: q.image_url
-        })))
+        .insert(questionsToInsert)
         .select();
 
       if (insertError) throw insertError;
+
+      // Bulk insert options
+      if (optionsToInsert.length > 0) {
+        const { error: optionsError } = await supabase
+          .from('options')
+          .insert(optionsToInsert);
+
+        if (optionsError) throw optionsError;
+      }
 
       // 3. Update State (Select these new questions)
       if (insertedQuestions) {
