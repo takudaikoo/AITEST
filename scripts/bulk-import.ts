@@ -31,12 +31,20 @@ const imageMap = new Map<string, string>(); // <filename, publicUrl>
 
 async function uploadImages() {
     console.log('--- Phase A: Uploading Images ---');
+
     if (!fs.existsSync(IMAGES_DIR)) {
-        console.log('Images directory not found, skipping.');
+        console.log(`Images directory not found at ${IMAGES_DIR}. Skipping image upload.`);
         return;
     }
 
-    const files = fs.readdirSync(IMAGES_DIR).sort();
+    let files: string[] = [];
+    try {
+        files = fs.readdirSync(IMAGES_DIR).sort();
+    } catch (e) {
+        console.log('Failed to read images directory. Skipping.');
+        return;
+    }
+
     let uploadedCount = 0;
 
     for (const file of files) {
@@ -79,48 +87,49 @@ async function importLectures() {
 
     // Recursive directory walk
     async function processDirectory(dir: string, category: string) {
-        const items = fs.readdirSync(dir).sort();
+        const items = fs.readdirSync(dir).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 
         for (const item of items) {
             const fullPath = path.join(dir, item);
             const stat = fs.statSync(fullPath);
 
             if (stat.isDirectory()) {
-                await processDirectory(fullPath, item); // Subdir name becomes category or part of it
-            } else if (item.toLowerCase().endsWith('.md')) {
+                // If directory is numbered "01_...", pass that down or ignore?
+                // The current structure seems flat inside categories.
+                // Recursion is fine.
+                // Use directory name as category for children
+                await processDirectory(fullPath, item);
+            } else if (item.endsWith('.md')) {
                 await processLectureFile(fullPath, item, category);
             }
         }
     }
 
     async function processLectureFile(filePath: string, fileName: string, category: string) {
-        let content = fs.readFileSync(filePath, 'utf-8');
+        let content = fs.readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '');
 
         // Replace image links
-        // Format: ![alt](filename.png) -> ![alt](full_url)
-        // We can use a regex to find image links
-        content = content.replace(/!\[(.*?)\]\((.*?)\)/g, (match, alt, src) => {
-            // src might be a simple filename or path. We assume filename.
-            const basename = path.basename(src);
-            const mappedUrl = imageMap.get(basename);
-            if (mappedUrl) {
-                return `![${alt}](${mappedUrl})`;
+        content = content.replace(/!\[([^\]]*)\]\(\.\/..\/attachments\/([^)]+)\)/g, (match, alt, imgFile) => {
+            const uploadedUrl = imageMap.get(imgFile);
+            if (uploadedUrl) {
+                return `![${alt}](${uploadedUrl})`;
             }
-            return match; // Keep original if not found (or log warning)
+            return match;
         });
 
-        // Derive Meta
-        // 1. Title Extraction from Content (MD H1)
-        // Default to filename if not found
-        let title = fileName.replace('.md', '');
+        // Title from Filename (User requirement: Filename IS the Japanese title)
+        // e.g. "001_日本語タイトル.md" -> "001_日本語タイトル"
+        const title = fileName.replace(/\.md$/i, '');
 
-        const lines = content.split('\n');
-        // Check for # Title
-        const h1Line = lines.find(l => l.startsWith('# '));
-        if (h1Line) {
-            title = h1Line.replace(/^#\s+/, '').trim();
-            // Remove markdown bold/italic if present in title
-            title = title.replace(/\*\*/g, '').replace(/\*/g, '');
+        // Look for corresponding Quiz CSV
+        // Structure: "001_日本語タイトル.md" pair with "001_日本語タイトル_確認問題.csv"
+        const csvFileName = `${title}_確認問題.csv`;
+        const csvPath = path.join(path.dirname(filePath), csvFileName);
+
+        let quizCsvContent = null;
+        if (fs.existsSync(csvPath)) {
+            // console.log(`Found Quiz CSV for ${title}`);
+            quizCsvContent = fs.readFileSync(csvPath, 'utf-8').replace(/^\uFEFF/, '');
         }
 
         // XP
@@ -142,10 +151,11 @@ async function importLectures() {
             type: 'lecture',
             category,
             content_body: content,
+            quiz_csv: quizCsvContent, // Store CSV string in DB
             xp_reward,
             is_active: true,
             created_at: new Date().toISOString(),
-            level_requirement: 1 // Default to 1 for lectures
+            level_requirement: 1
         };
 
         if (existing) {
@@ -206,69 +216,91 @@ async function importTests() {
 }
 
 async function processCsvFile(filePath: string, fileName: string) {
-    const content = fs.readFileSync(filePath, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8').replace(/^\uFEFF/, '').trim();
+
+    // Default Variables
     let title = fileName.replace('.csv', '');
-
-    // Heuristics for metadata from filename
-    // e.g. "test_lv1_beginner.csv"
-    let type = 'test';
+    let type: 'lecture' | 'test' | 'exam' = 'test';
     let level = 1;
-    let difficulty = 'BEGINNER'; // Default
-    let rankTier = undefined;
+    let difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' = 'BEGINNER';
+    let rankTier: 'BEGINNER' | 'STANDARD' | 'EXPERT' | 'MASTER' | undefined = undefined;
 
-    const lowerName = title.toLowerCase();
+    // Parsing specific for AI Exam-kun Japanese filenames
+    // Format: "04_ノーコード(初級).csv"
+    let num: number | undefined = undefined;
+    let jpLevel = '';
+    let isCert = false;
 
-    // 1. Generate Japanese Title
-    // Pattern: test_01_basics_beginner
-    // Regex to extract parts
-    const match = lowerName.match(/test_(\d+)_([a-z0-9]+)_([a-z]+)/);
+    try {
+        const normalizedFile = fileName.normalize('NFC');
+        const firstUnderscore = normalizedFile.indexOf('_');
+        const openParen = normalizedFile.lastIndexOf('(');
+        const closeParen = normalizedFile.lastIndexOf(')');
 
-    if (match) {
-        const num = match[1]; // 01
-        const slug = match[2]; // basics
-        const diffSlug = match[3]; // beginner/intermediate/advanced
+        if (firstUnderscore > -1 && openParen > firstUnderscore && closeParen > openParen) {
+            const numStr = normalizedFile.substring(0, firstUnderscore);
+            const namePart = normalizedFile.substring(firstUnderscore + 1, openParen);
+            const levelPart = normalizedFile.substring(openParen + 1, closeParen);
 
-        const jpCategory = TOPIC_MAP[slug] || slug;
-        const jpLevel = LEVEL_MAP[diffSlug] || diffSlug;
+            num = parseInt(numStr, 10);
+            jpLevel = levelPart;
 
-        // Format: "01. 環境・基礎 (初級)"
-        title = `${num}. ${jpCategory} (${jpLevel})`;
-    } else if (lowerName.includes('exam')) {
-        // Exam logic
-        let jpRank = 'ビギナー';
-        if (lowerName.includes('standard')) jpRank = 'スタンダード';
-        if (lowerName.includes('expert')) jpRank = 'エキスパート';
-        if (lowerName.includes('master')) jpRank = 'マスター';
-
-        title = `認定試験 (${jpRank})`;
+            // Format: "004. ノーコード (初級)"
+            const paddedNum = num.toString().padStart(3, '0');
+            title = `${paddedNum}. ${namePart} (${jpLevel})`;
+            console.log(`Parsed (Robust) ${fileName}: Num=${num}, Level=${jpLevel}`);
+        } else {
+            // Fallback for Certification Exams
+            if (fileName.includes('認定試験')) {
+                isCert = true;
+                type = 'exam';
+                if (fileName.includes('初級')) jpLevel = '初級';
+                else if (fileName.includes('中級')) jpLevel = '中級';
+                else if (fileName.includes('上級')) jpLevel = '上級';
+                title = `認定試験 (${jpLevel})`;
+                console.log(`Parsed Cert: ${title}`);
+            } else {
+                console.warn(`!! Parse Failed for file: ${fileName}`);
+            }
+        }
+    } catch (e) {
+        console.error(`Error parsing file ${fileName}`, e);
     }
 
-    if (lowerName.includes('exam') || lowerName.includes('試験')) {
-        type = 'exam';
-        if (lowerName.includes('beginner') || lowerName.includes('初級')) rankTier = 'BEGINNER';
-        else if (lowerName.includes('standard') || lowerName.includes('中級') || lowerName.includes('標準')) rankTier = 'STANDARD';
-        else if (lowerName.includes('expert') || lowerName.includes('上級')) rankTier = 'EXPERT';
-        else if (lowerName.includes('master')) rankTier = 'MASTER';
-        else rankTier = 'BEGINNER'; // fallback
-    } else {
-        // Test
-        // Extract Level "lv1", "level1", "l1"
-        const levelMatch = lowerName.match(/l(?:evel)?(\d+)/);
-        if (levelMatch) level = parseInt(levelMatch[1]);
-
-        if (lowerName.includes('beginner') || lowerName.includes('初級')) difficulty = 'BEGINNER';
-        else if (lowerName.includes('intermediate') || lowerName.includes('中級')) difficulty = 'INTERMEDIATE';
-        else if (lowerName.includes('advanced') || lowerName.includes('上級')) difficulty = 'ADVANCED';
+    // Determine Level Requirement (Unlock Condition)
+    if (isCert) {
+        if (jpLevel === '初級') level = 4;
+        else if (jpLevel === '中級') level = 8;
+        else if (jpLevel === '上級') level = 10;
+        else level = 1; // Fallback
+    } else if (jpLevel && num !== undefined) {
+        if (jpLevel === '初級') {
+            if (num <= 3) level = 1;
+            else if (num <= 6) level = 2;
+            else if (num <= 10) level = 3;
+            else level = 3;
+        } else if (jpLevel === '中級') {
+            if (num <= 5) level = 5;
+            else if (num <= 10) level = 6;
+            else level = 6;
+        } else if (jpLevel === '上級') {
+            level = 9;
+        } else {
+            level = 1;
+        }
     }
+
+    // Set Difficulty/Rank based on jpLevel (for XP Calc)
+    if (jpLevel === '初級') { difficulty = 'BEGINNER'; rankTier = 'BEGINNER'; }
+    if (jpLevel === '中級') { difficulty = 'INTERMEDIATE'; rankTier = 'STANDARD'; }
+    if (jpLevel === '上級') { difficulty = 'ADVANCED'; rankTier = 'EXPERT'; }
 
     // Calc XP
-    // Note: calculateXpReward signature: (type, level, difficulty, rankTier)
-    // We need to cast types
     const xp_reward = calculateXpReward(
-        type as 'lecture' | 'test' | 'exam',
+        type,
         level,
-        type === 'test' ? difficulty as any : undefined,
-        type === 'exam' ? rankTier as any : undefined
+        type === 'test' ? difficulty : undefined,
+        type === 'exam' ? rankTier : undefined
     );
 
     // Validate CSV Content
@@ -284,7 +316,7 @@ async function processCsvFile(filePath: string, fileName: string) {
         .select('id')
         .eq('title', title)
         .eq('type', type)
-        .single();
+        .maybeSingle();
 
     let programId = existing?.id;
     const programPayload = {
@@ -295,14 +327,13 @@ async function processCsvFile(filePath: string, fileName: string) {
         level_requirement: level,
         quiz_csv: content, // Save raw CSV
         is_active: true,
-        // difficult/rank are not saved columns, implicitly defined by title/xp
     };
 
     if (existing) {
-        console.log(`Updating Program: ${title}`);
+        console.log(`Updating Program: ${title} (Req Lv.${level})`);
         await supabase.from('programs').update(programPayload).eq('id', programId);
     } else {
-        console.log(`Creating Program: ${title}`);
+        console.log(`Creating Program: ${title} (Req Lv.${level})`);
         const { data: newProg, error } = await supabase.from('programs').insert(programPayload).select().single();
         if (error || !newProg) {
             console.error(`Failed to create program ${title}:`, error);
@@ -312,7 +343,6 @@ async function processCsvFile(filePath: string, fileName: string) {
     }
 
     // Update Questions Links
-    // 1. Delete old links
     await supabase.from('program_questions').delete().eq('program_id', programId);
 
     // 2. Insert Questions (if we want to use the global questions table)

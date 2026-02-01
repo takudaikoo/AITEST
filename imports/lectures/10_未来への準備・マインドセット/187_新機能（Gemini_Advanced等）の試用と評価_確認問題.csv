@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Gemini Advanced（有料版）などの新しいAI機能や上位モデルが登場した際、ビジネスパーソンとして推奨される態度はどれですか？",single,"一生無料版だけを使い続ける","とりあえず批判から入る","実際に短期間でも課金・試用して、無料版との性能差や自業務への費用対効果（ROI）を自ら検証・評価する","他人が使い終わるのを待つ",3,"百聞は一見に如かずです。AIの性能差や新機能の価値は、実際に自分の業務で試さないとわかりません。少額の投資で検証し、有用なら採用、不要なら解約という判断のスピードが重要です。",1,10,"マインドセット,自己投資,Gemini_Advanced","未来への準備・マインドセット"

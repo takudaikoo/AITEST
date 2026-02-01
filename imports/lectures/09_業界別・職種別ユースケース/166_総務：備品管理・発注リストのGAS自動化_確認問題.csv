@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"オフィスの備品在庫管理などを効率化するために、Geminiを使ってGoogleスプレッドシートと連携した自動通知システムを作る際、最も役立つアプローチはどれですか？",single,"在庫を毎日手で数えて回る","Geminiに「在庫が減ったらメールを送るGoogle Apps Script（GAS）のコード」を生成させ、スプレッドシートに実装する","念力で在庫を増やす","備品をすべて撤去する",2,"定型的な在庫チェックは自動化の好例です。プログラミングができなくても、AIに要件（「X以下になったらメール通知」など）を伝えれば、GASのコードを生成してくれます。",1,10,"総務,GAS,業務効率化","業界別・職種別ユースケース"

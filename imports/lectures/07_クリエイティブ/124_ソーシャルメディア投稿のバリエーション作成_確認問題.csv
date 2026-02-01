@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"1つの商品やイベントの情報を、X（Twitter）、Instagram、LinkedInなどの異なるSNSで発信する際、Geminiをどう活用するのが最も効果的ですか？",single,"すべてのSNSに全く同じ長文をコピペさせる","各プラットフォームのユーザー層や文化（文字数、トーン、ハッシュタグの有無など）に合わせて、最適な投稿文のバリエーションを作成させる","SNSのパスワードを解析させる","自動で「いいね」を連打させる",2,"メディアにはそれぞれの「文法」があります。AIにプラットフォームごとの特性（Xは短文・拡散、Instaは世界観、LinkedInはビジネス）を踏まえた書き分けをさせることで、エンゲージメントを高められます。",1,10,"SNS,書き分け,コンテンツマーケティング","クリエイティブ"

@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"生成AIの利用が地球環境（電力消費・CO2排出）に与える影響を考慮し、ユーザーができる配慮として適切なものはどれですか？",single,"AIを使うときは部屋の電気を消す","無目的に大量の画像生成や対話を繰り返すのを控え、目的に応じて軽量モデル（省エネモデル）を選んだり、プロンプトを工夫して試行回数を減らす","AIに「電気を大切に」と話しかける","AIを使うのを完全にやめる",2,"LLMの運用には膨大なGPUパワーと電力が必要です。不要なリクエストを減らす、効率的なモデル（Gemini Flash等）を選ぶといった行動は、デジタル空間のエコロジー活動（Green AI）に繋がります。",1,10,"環境問題,SDGs,Green_AI","倫理・セキュリティ・リスク"

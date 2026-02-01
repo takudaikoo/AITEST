@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"システム開発のテスト工程において、Geminiを活用して効率的に準備できるものはどれですか？",single,"テストをするためのPC","本番環境を再現するためのリアルな「ダミーデータ（JSON、CSV等）」や、エラー検証用の「異常値データ」","開発者のための夜食","バグのない完璧なコード",2,"テストデータの作成は意外と工数がかかります。AIなら、指定したフォーマット（JSON等）や条件（日本人名、異常値あえて混入など）に従って、高品質なテストデータを瞬時に量産できます。",1,10,"開発,テストデータ,JSON","業界別・職種別ユースケース"

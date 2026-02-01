@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Chromeブラウザの「Help me write（筆記サポート）」機能の主な用途として正しいものはどれですか？",single,"Webページを要約して音声で読み上げる","Web上の入力フォームや投稿欄で、短い指示から適切な文章を作成・推敲する","ブラウザの閲覧履歴を完全に削除する","不正なWebサイトへのアクセスをブロックする",2,"「Help me write」は、Web上のテキストフィールドに入力する文章の作成をAIが支援する機能です。",1,10,"Chrome,執筆支援,ブラウザ活用","環境・基礎"

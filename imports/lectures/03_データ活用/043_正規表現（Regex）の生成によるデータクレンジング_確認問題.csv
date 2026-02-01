@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"データ内の特定のパターン（例：メールアドレス、郵便番号、括弧内の文字など）を一括で抽出・置換したい場合に、Geminiに生成させると便利なものは何ですか？",single,"マクロ","正規表現（Regular Expression）","ピボットテーブル","グラフ",2,"正規表現は文字列のパターンマッチングに強力ですが、記述が難解です。Geminiに生成してもらうことで、高度なデータクレンジングを容易に行えます。",2,10,"データクレンジング,正規表現,文字列操作","データ活用"

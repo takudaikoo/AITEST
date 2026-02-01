@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"生成AI（Gemini）が最も得意とする業務タイプはどれですか？",single,"高精度な数値計算や厳密なルールに基づく定型業務","「正解が一つではない」アイデア出しや文章要約などの非定型業務","物理的なモノの運搬や組み立て","リアルタイムの株価変動予測",2,"生成AIは、文脈理解や創造性が求められる「非定型業務（要約、創作、案出しなど）」を得意としています。",1,10,"得意不得意,非定型業務,タスク選定","環境・基礎"

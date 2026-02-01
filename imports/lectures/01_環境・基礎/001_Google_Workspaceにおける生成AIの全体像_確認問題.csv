@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Google WorkspaceにおけるGeminiの特徴として、誤っているものはどれですか？",single,"Gmailやドキュメントなどのツール内で直接AI機能を利用できる","企業向けプランでは、入力データはAIの学習に使用されない","テキスト情報のみを処理でき、画像や音声は認識できない","スプレッドシートの数式生成やデータ整理をサポートする",3,"GeminiはマルチモーダルAIであり、テキストだけでなく画像、音声、動画も認識・処理することができます。その他の選択肢は正しい特徴です。",1,10,"Gemini,Google Workspace,基礎知識","環境・基礎"

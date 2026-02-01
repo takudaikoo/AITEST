@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"GoogleドキュメントのGemini機能で、すでに書かれた文章の「トーン（口調）」を変更したい場合、選べる選択肢として適切でないものはどれですか？",single,"Formal（より洗練された、フォーマルな表現にする）","Casual（より親しみやすい表現にする）","Concise（より簡潔にする）","Angry（より怒った表現にする）",4,"Geminiのトーン変更機能には、通常「Formal（フォーマル）」「Casual（カジュアル）」「Concise（簡潔）」などが含まれますが、「Angry（怒り）」のようなネガティブな感情表現は含まれません。",1,10,"ドキュメント編集,トーン変更,リライト","業務効率化"

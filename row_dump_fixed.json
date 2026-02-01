@@ -1,0 +1,19 @@
+{
+  "content": "Gemini for Google Workspace は、Google のどのサービス群に統合されていますか？",
+  "question_type": "single",
+  "option_1": "Microsoft Office",
+  "option_2": "Adobe Creative Cloud",
+  "option_3": "Google Workspace (Gmail",
+  "option_4": " Docs",
+  "correct_indices": " Sheets等)",
+  "explanation": "AWS",
+  "difficulty": "3",
+  "points": "Gemini for Google Workspace は、Google ドキュメント、スプレッドシート、スライド、Gmail などの Google Workspace アプリケーションに組み込まれており、シームレスに利用できます。",
+  "tags": "1",
+  "category": "8",
+  "__parsed_extra": [
+    "Gemini",
+    "Workspace",
+    "環境・基礎"
+  ]
+}

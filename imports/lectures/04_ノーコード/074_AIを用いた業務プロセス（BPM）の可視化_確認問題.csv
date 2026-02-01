@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"複雑な業務フローを整理・可視化するために、Geminiに生成させると便利な「テキストで図を描ける記法」は何ですか？",single,"Morse（モールス信号）","Mermaid（マーメイド）","Braille（点字）","Hieroglyph（ヒエログリフ）",2,"Mermaid記法を使えば、テキストベースの指示からフローチャートやシーケンス図を自動生成できます。Geminiはこのコード生成が得意で、手軽に業務フローを図解化できます。",1,10,"可視化,フローチャート,Mermaid,BPM","ノーコード"

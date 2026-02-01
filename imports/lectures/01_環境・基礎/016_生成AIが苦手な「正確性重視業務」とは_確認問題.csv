@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"生成AIを利用する際、人間による最終確認（Human in the Loop）が特に重要となる業務はどれですか？",single,"クリエイティブなアイデア出し","メールのドラフト作成","法的拘束力のある契約書の最終チェックや厳密な財務計算","社内SNSへのカジュアルな投稿",3,"法的な判断や厳密な数値計算など、正確性が最優先される業務においては、AIの誤り（ハルシネーション）が重大なリスクになるため、人間の確認が必須です。",2,10,"苦手分野,Human in the Loop,リスク管理","環境・基礎"

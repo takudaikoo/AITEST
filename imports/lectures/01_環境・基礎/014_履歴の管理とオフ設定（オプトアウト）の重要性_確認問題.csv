@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Geminiのチャット履歴（アクティビティ）を保存したくない場合、どのような設定を行えばよいですか？",single,"ブラウザのシークレットモードを使う","「Gemini アプリのアクティビティ」設定をOFFにする","PCの電源を毎回切る","チャットの最後に「履歴を消して」と入力する",2,"Googleアカウントの設定（アクティビティ管理）で「Gemini アプリのアクティビティ」をOFFにすることで、履歴の保存を停止できます。",2,10,"履歴管理,オプトアウト,プライバシー","環境・基礎"

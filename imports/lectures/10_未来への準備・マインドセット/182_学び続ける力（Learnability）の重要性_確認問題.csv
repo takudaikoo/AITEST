@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"知識の陳腐化が早いAI時代において、最も重要視される能力の一つである「ラーナビリティ（Learnability）」と対になる概念として、古いやり方を捨てることを何と呼びますか？",single,"アンラーン（Unlearn / 学習棄却）","リサイクル","アップロード","フリーズ",1,"新しい知識を入れるためには、過去の成功体験や古くなった知識を手放す「アンラーン（学びほぐし）」が必要です。ラーナビリティとアンラーンはセットで機能するスキルです。",1,10,"学習,リスキリング,アンラーン","未来への準備・マインドセット"

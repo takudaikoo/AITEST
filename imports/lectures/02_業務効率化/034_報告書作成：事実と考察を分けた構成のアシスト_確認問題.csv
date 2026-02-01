@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"ビジネス報告書の質を高めるために、Geminiを使って徹底すべき「情報の切り分け」とは何ですか？",single,"「ポジティブな情報」と「ネガティブな情報」","「事実（Facts）」と「考察（Analysis）」","「日本語」と「英語」","「画像」と「テキスト」",2,"優れた報告書は、客観的に起きたこと（事実）と、それに対する報告者の意見（考察）が明確に区別されています。AIに整理させることで、この構造を簡単に作れます。",1,10,"報告書,ロジカルシンキング,文章構成","業務効率化"

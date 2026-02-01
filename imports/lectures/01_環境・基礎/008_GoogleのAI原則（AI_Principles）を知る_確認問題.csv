@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Googleの「AI原則」において、AI開発・利用で回避すべきとされていることは何ですか？",single,"科学的な卓越性の追求","社会的に有益な利用","人種や性別などによる不公平なバイアス（偏見）の助長","プライバシーの保護設計",3,"GoogleのAI原則では、「不公平なバイアスの回避」が明記されており、特定の人々を差別したり不利益を与えたりしないよう配慮されています。",2,10,"AI倫理,AI原則,バイアス","環境・基礎"

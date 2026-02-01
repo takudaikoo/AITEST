@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"社用のGoogle WorkspaceアカウントでGeminiを使用する場合、入力したデータの取り扱いについて正しい記述はどれですか？",single,"GoogleのAIモデルの品質向上のため、すべてのデータが学習に使用される","入力したデータはAIの学習には使用されず、データの所有権は顧客（企業）にある","機密情報は自動的に削除されるため、何を書いても問題ない","上司の許可がない限り、一切使用してはならない",2,"Google Workspaceの有料プランでは、入力データはAIの学習トレーニングには使用されません。あくまで顧客のデータとして保護されます。",1,10,"セキュリティ,プライバシー,Google Workspace","環境・基礎"

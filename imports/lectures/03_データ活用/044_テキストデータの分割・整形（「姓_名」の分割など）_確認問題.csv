@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"「姓と名を分ける」「住所から都道府県だけ抜く」といったテキストデータの整形作業において、Geminiへの指示として効果的な方法はどれですか？",single,"「なんとなく分けて」と抽象的に言う","具体的なデータ例（入力と期待する出力）を提示して、それを実現する関数や手順を聞く","「気合いで直して」と精神論を伝える","モニターに向かって念じる",2,"テキスト処理の関数（SPLIT, LEFT, MID等）はパラメータ設定が複雑ですが、具体的な事例（Before/After）を見せることで、AIは意図を正確に理解し、最適な関数を提案できます。",1,10,"データ整形,SPLIT関数,テキスト処理","データ活用"

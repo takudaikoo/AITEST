@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"ZapierやMakeなどのiPaas（連携ツール）を使って業務効率化を図りたい時、Geminiに相談して得られるメリットはどれですか？",single,"ツールの月額料金を無料にする裏技を教えてくれる","自分が使っている複数のツール（Gmail, Slack等）を組み合わせた、具体的な自動化レシピ（活用アイデア）を提案してくれる","ツールの開発者をハッキングする","すべてのメールを勝手に削除する設定をする",2,"「何と何ができるか」の組み合わせは無限大にあるため、自分の業務内容と使用ツールを伝えて、効果的な自動化パターン（レシピ）をAIに提案してもらうのが効率的です。",1,10,"Zapier,Make,ツール連携","ノーコード"

@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"外出先で、手書きの会議メモ即座にテキストデータ化したい場合、Geminiアプリのどの機能を使うのが最適ですか？",single,"音声入力機能でメモの内容を読み上げる","カメラ機能（Googleレンズ連携）でメモを撮影し、「文字起こしして」と指示する","位置情報機能を使ってメモの場所を記録する","手動でフリック入力する",2,"Geminiアプリのカメラ機能を使えば、画像内の文字を認識（OCR）し、テキストデータとして抽出・変換することができます。",1,10,"スマホ活用,カメラ連携,文字起こし","環境・基礎"

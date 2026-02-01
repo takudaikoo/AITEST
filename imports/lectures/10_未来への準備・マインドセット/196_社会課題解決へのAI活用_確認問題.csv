@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"「AI for Social Good（社会善のためのAI）」と呼ばれる動きが目指すものとして、正しい記述はどれですか？",single,"AIを使って世界征服する","貧困、環境問題、医療格差、災害対策などの地球規模の社会課題を、AIのデータ分析力や予測能力を活用して解決しようとする取り組み","AIを使って株価を操作し、自分だけ大儲けする","AIを神として崇める",2,"Googleなどのテック企業も力を入れている分野です。SDGsの達成に向けて、気候変動予測や感染症対策など、人間の手だけでは解決困難な課題にAIパワーを適用する動きが加速しています。",1,10,"SDGs,社会貢献,AI_for_Good","未来への準備・マインドセット"

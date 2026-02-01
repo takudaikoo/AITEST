@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"会議の文字起こしデータからGeminiを使って議事録を作成する際、特にAIに抽出させるべき重要な要素はどれですか？",single,"会議中の雑談やジョークの全文","決定事項とネクストアクション（ToDo、担当者、期限）","参加者の服装や髪型","会議室の温度や湿度",2,"議事録の目的は、決まったこと（決定事項）と、次にやるべきこと（ネクストアクション）を明確にすることです。AI活用により、長時間の会話からこれらを効率よく抽出できます。",1,10,"議事録,要約,タスク管理","業務効率化"

@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"スプレッドシート上のデータ（在庫数や期限など）を監視し、特定の条件を満たした時だけチャットツールに通知を送る仕組みを作りたい。Geminiへの指示として適切なキーワードはどれですか？",single,"「手書きの手紙を送って」","「Webhook（ウェブフック）を使ってGoogle Chat/Slackに通知するGASコードを書いて」","「スプレッドシートを印刷してFAXで送って」","「念力で相手に伝えて」",2,"外部のチャットツールにシステムからメッセージを送るための一般的な仕組みが「Webhook」です。これとGASを組み合わせることで、条件付き通知ボットが作れます。",2,10,"GAS,Webhook,チャット連携","データ活用"

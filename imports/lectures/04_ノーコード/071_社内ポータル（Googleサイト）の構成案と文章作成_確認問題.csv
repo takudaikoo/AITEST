@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"社内の情報を集約した「ポータルサイト」をGoogleサイトで構築する際、Geminiに依頼すべき作業として適切なものはどれですか？",single,"サイトのサーバーを物理的に組み立てさせる","社員がアクセスしやすいサイト構成（サイトマップ）の提案や、掲載する文章の作成","HTMLとCSSをゼロからすべて書かせる（Googleサイトはノーコードなので不要）","社員全員のパスワードを解析させる",2,"Googleサイトはノーコードで直感的に作れるため、コードよりも「どのような情報をどこに配置するか（情報設計）」が重要になります。AIにサイト構成を提案させるのが効果的です。",1,10,"Googleサイト,社内ポータル,情報共有","ノーコード"

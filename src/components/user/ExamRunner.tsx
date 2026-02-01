@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -291,7 +293,13 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
 
             <Card className="min-h-[400px] flex flex-col">
                 <CardHeader>
-                    <CardTitle className="text-lg leading-relaxed">{currentQuestion.text}</CardTitle>
+                    <CardTitle className="text-lg leading-relaxed">
+                        <div className="prose dark:prose-invert">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {currentQuestion.text}
+                            </ReactMarkdown>
+                        </div>
+                    </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
                     {currentQuestion.question_type === 'single_choice' && (

@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Gmailの「Help me write（筆記サポート）」機能を使って返信メール作成する際、最も効率的な使い方はどれですか？",single,"AIに完全に任せて、生成された文章を読まずに送信ボタンを押す","短い指示（例：「丁寧に断って」）を入力し、AIに下書きを作らせてから、自分で微修正して送信する","AIが作った文章を一文字残らず書き直す","自分の書いた文章をAIに読み上げさせる",2,"AIに「たたき台（ドラフト）」を作らせ、人間がそれをチェック・修正して完成させるのが、品質と効率のバランスが最も良い方法です。",1,10,"Gmail,メール作成,Help me write","業務効率化"

@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Googleフォームからの回答があった際、特定の内容（送信者名や問い合わせ内容など）を含んだメールをチーム全員に自動送信したい。Geminiに依頼すべきことは何ですか？",single,"送信者の自宅に電話をかけるよう指示する","フォームの回答をスプレッドシートから読み取り、Gmailで送信するGASコードの生成と、トリガー設定の手順を聞く","フォームの背景色を赤に変えるデザイン案を聞く","Googleフォームを削除する手順を聞く",2,"標準の通知機能はシンプルですが、GASを使えば回答内容を引用したカスタムメールを送れます。「コード生成」と「トリガー設定」の2つをAIに聞けば実装可能です。",2,10,"GAS,自動通知,Googleフォーム","データ活用"

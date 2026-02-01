@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"日報や議事録など、決まったテンプレートファイルを毎日/毎週コピーして作成する作業を自動化したい。GASで実現可能な機能として正しいものはどれですか？",single,"ファイルのコピー、リネーム（日付入り）、フォルダ移動をすべて自動実行できる","ファイルの中身を勝手に小説に書き換える","パソコンの電源を物理的に押す","コピー機から紙を出力する",1,"GAS（Google Apps Script）はGoogleドライブ上のファイル操作が可能であり、テンプレートの複製や、日付に基づいたファイル名変更などをスケジュール実行させることが可能です。",1,10,"GAS,Drive操作,ルーチン自動化","データ活用"

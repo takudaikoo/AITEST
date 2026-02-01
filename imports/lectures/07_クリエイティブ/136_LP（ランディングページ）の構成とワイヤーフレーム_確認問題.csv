@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"商品を販売するためのLP（ランディングページ）を作成する際、Geminiを活用して「売れる構成」を作るために有効なフレームワークは何ですか？",single,"PASONAの法則やAIDMAなどのマーケティング法則に基づいた構成案の作成","しりとり","あいうえお作文","円周率の暗唱",1,"LP制作では、顧客心理を順を追って誘導する構成（PASONAの法則など）が重要です。AIに商品情報を当てはめさせ、論理的で説得力のある構成案を作成させるのが効果的です。",1,10,"LP制作,マーケティング,PASONA,構成","クリエイティブ"

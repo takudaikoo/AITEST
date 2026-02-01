@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"GmailのGemini機能で「メールを要約」する主なメリットは何ですか？",single,"送信者のメールアドレスを自動的に連絡先に保存してくれる","長いスレッドメールの経緯や結論を短時間で把握し、読む時間を短縮できる","メールに添付されたウイルスを自動的に駆除してくれる","メールを自動的にフォルダ分けしてくれる",2,"Geminiの要約機能を使えば、長文のメールスレッドを要約し、誰が何を言っているか、結論は何かを瞬時に把握できます。",1,10,"Gmail,要約,効率化","業務効率化"

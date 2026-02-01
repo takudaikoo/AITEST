@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Geminiの回答下部にある「Gボタン（Googleアイコン）」をクリックすると、どのような機能が実行されますか？",single,"回答を英語に翻訳する","Google検索を実行し、回答の内容に裏付けがあるかを再確認（ダブルチェック）する","回答をGoogleドキュメントに保存する","回答をSNSでシェアする",2,"Gボタンは「回答を再確認」する機能です。Google検索を使ってWeb上の情報と照合し、裏付けがある部分をハイライト表示します。",1,10,"ハルシネーション対策,Gボタン,ダブルチェック","環境・基礎"

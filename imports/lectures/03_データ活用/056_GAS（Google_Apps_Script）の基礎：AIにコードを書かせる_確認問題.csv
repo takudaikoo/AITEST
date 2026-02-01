@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"プログラミング経験がない人が、業務自動化のためにGoogle Apps Script (GAS) を活用する際、Geminiをどのように使うのが最も効果的ですか？",single,"プログラミングの参考書を1ページ目から写経する","「スプレッドシートのA1セルに書き込んで」のように、やりたいことを日本語で指示して、コードそのものを生成させる","諦めて手作業ですべて行う","Geminiに「頑張れ」と応援してもらう",2,"現代のプログラミングにおいて、AIはコード生成の強力なパートナーです。自然言語でロジックを伝えれば、基本的な構文はすべてAIが記述してくれます。",1,10,"GAS,プログラミング,自動化","データ活用"

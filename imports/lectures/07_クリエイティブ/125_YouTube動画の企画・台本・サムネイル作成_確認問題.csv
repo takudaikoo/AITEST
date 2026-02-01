@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"YouTubeなどの動画コンテンツを作成する際、Geminiが支援できる範囲として正しいものはどれですか？",single,"動画の撮影ボタンを押すこと","企画のアイデア出し、構成（プロット）作成、詳細な台本（スクリプト）、そしてサムネイルのデザイン案までを一貫してサポートできる","機材を運ぶこと","出演者のメイクをすること",2,"動画制作のプレプロダクション（準備段階）である企画・構成・脚本・サムネ案出しは、すべて言語テキストで完結するため、AIの得意分野です。",1,10,"動画制作,YouTube,台本作成","クリエイティブ"

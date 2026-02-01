@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"業務でGeminiを利用する際、個人のGmailアカウントではなく「会社のGoogle Workspaceアカウント」を使うべき最大の理由は何ですか？",single,"個人アカウントではGeminiが使えないから","会社用アカウントの方が回答速度が速いから","会社用アカウントは契約により入力データがAI学習に利用されず、セキュリティ保護の対象となるから","会社用アカウントだと画像生成ができないから",3,"会社用のGoogle Workspace（有料版）は、データ保護の特約があり、入力内容がAIの学習に使われません。個人版はその保証がないため、業務利用には適しません。",1,10,"セキュリティ,アカウント管理,情報漏洩対策","環境・基礎"

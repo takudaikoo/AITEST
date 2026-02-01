@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"GeminiでGmailやGoogleドライブ内の情報を検索・活用するために必要な設定操作はどれですか？",single,"Googleアカウントのパスワードを変更する","Geminiの設定メニューから「拡張機能」を開き、「Google Workspace」をONにする","ブラウザのキャッシュをクリアする","Google管理コンソールでドメイン設定を変更する",2,"Geminiの設定内にある「拡張機能」メニューから、Google Workspace連携を有効化（ON）にする必要があります。",1,10,"Gemini,設定,拡張機能","環境・基礎"

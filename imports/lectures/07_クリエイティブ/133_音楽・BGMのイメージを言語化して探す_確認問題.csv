@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"動画制作などで、イメージに合うBGM（音楽）が見つからない時、Geminiを使って解決する方法はどれですか？",single,"PCに向かって鼻歌を歌う","「おしゃれな曲」という曖昧なイメージを、音楽検索サイトや生成AIで使える「具体的なキーワード（ジャンル、楽器、テンポ等）」に言語化・翻訳してもらう","スピーカーを叩いて音を変える","無音の動画にする",2,"音楽のイメージを検索可能なタグ（Lo-fi, Upbeat, Acoustic等）に変換するのは意外と難しいものです。AIに雰囲気を伝えて専門用語に変換してもらうことで、探索や生成の精度が上がります。",1,10,"音楽検索,BGM,プロンプト変換","クリエイティブ"

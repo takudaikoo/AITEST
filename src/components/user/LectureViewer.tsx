@@ -207,7 +207,11 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
                                 <div className="flex justify-between items-start">
                                     <div className="space-y-2">
                                         <Badge variant="outline">Q{idx + 1}</Badge>
-                                        <CardTitle className="text-base leading-relaxed">{q.content}</CardTitle>
+                                        <div className="prose dark:prose-invert text-base leading-relaxed">
+                                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                                {q.content}
+                                            </ReactMarkdown>
+                                        </div>
                                     </div>
                                     <Badge>{q.points}pt</Badge>
                                 </div>

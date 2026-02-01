@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Geminiの回答に含まれる小さな数字（[1], [2]など）は何を表していますか？",single,"Geminiが回答を生成するのにかかった秒数","情報の確からしさ（自信度）を表すスコア","回答が参照した情報源（Webサイトなど）へのリンク","回答の文字数カウント",3,"Geminiが表示する数字（引用注）は、その情報がどのWebサイトやドキュメントに基づいているかを示すソースリンクです。クリックすることで元情報を確認できます。",1,10,"ソース確認,引用,ファクトチェック","環境・基礎"

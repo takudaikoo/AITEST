@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"質の高い回答を得るためのプロンプト（指示文）の構成要素として、適切でないものはどれですか？",single,"役割（Role）の付与","背景（Context）の説明","出力形式（Output Format）の指定","個人情報（クレジットカード番号など）の入力",4,"プロンプトエンジニアリングにおいて、役割、背景、指示、出力形式は重要ですが、個人情報や機密情報の入力はセキュリティリスクとなるため不適切です。",1,10,"プロンプト,構成要素,指示の出し方","環境・基礎"

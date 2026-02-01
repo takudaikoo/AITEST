@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"AppSheetで作成した「日報アプリ」に、Automation（自動化）機能を組み合わせることで実現できる業務改善はどれですか？",single,"日報を入力するとスマホが爆発する","日報データが登録された瞬間に、PDF化して上司へのメール送信やチャット通知を自動で行う","入力された日報の内容をAIが勝手に改ざんする","日報を書くたびに給料が自動的に上がる",2,"AppSheetのAutomation機能を使えば、データ更新をトリガー（きっかけ）として、メール送信、通知、ファイル作成などの定型アクションを自動実行できます。",1,10,"業務自動化,日報,ワークフロー","ノーコード"

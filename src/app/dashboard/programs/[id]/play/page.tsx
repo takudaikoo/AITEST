@@ -86,10 +86,35 @@ export default async function PlayPage({ params }: PlayPageProps) {
     // ACTUALLY, I can pass is_correct to the client component BUT the client component logic uses it.
 
     // Let's pass the full questions for now.
-    const questionsForRunner = programQuestions?.map((pq: any) => ({
+    // 4. Fallback: If no DB questions, try to parse from quiz_csv (Clean Import fallback)
+    let questionsForRunner = programQuestions?.map((pq: any) => ({
         ...pq.questions,
-        // sending is_correct for client side scoring logic
+        options: pq.questions.options.map((o: any) => ({
+            id: o.id,
+            text: o.text,
+            is_correct: o.is_correct
+        }))
     })) || [];
+
+    if (questionsForRunner.length === 0 && program.quiz_csv) {
+        const { parseAndValidateQuestions } = await import("@/lib/csv-import");
+        const parsed = await parseAndValidateQuestions(program.quiz_csv);
+
+        if (parsed.errors.length === 0) {
+            questionsForRunner = parsed.data.map((q, idx) => ({
+                id: `csv-${idx}-${Date.now()}`, // Temporary ID
+                text: q.content,
+                question_type: q.question_type,
+                explanation: q.explanation,
+                grading_prompt: "", // Not in CSV for now
+                options: q.options.map((optText, optIdx) => ({
+                    id: (optIdx + 1).toString(),
+                    text: optText,
+                    is_correct: q.correct_indices.includes(optIdx + 1)
+                }))
+            }));
+        }
+    }
 
 
     if (program.type === 'lecture') {

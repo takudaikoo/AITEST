@@ -1,0 +1,1762 @@
+[
+  {
+    "id": "e893f00d-0516-4824-a7e0-83654095e393",
+    "title": "001_Google_Workspaceにおける生成AIの全体像",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "1d92fdb1-9ea4-4b94-93a8-652fe2b8c5f7",
+    "title": "001. 環境・基礎 (中級)",
+    "type": "test",
+    "level_requirement": 5,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "76d6961d-808a-45b1-83d5-8a018cfe05fc",
+    "title": "001. 環境・基礎 (初級)",
+    "type": "test",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "1b09efcc-757a-466e-beb1-df2a7097e0a7",
+    "title": "002_無料版GeminiとGemini_Advanced（有料版）の決定的な違い",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "5be52317-af28-44cb-90d3-edf5e1a74697",
+    "title": "002. 業務効率化 (上級)",
+    "type": "test",
+    "level_requirement": 9,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "8f4eda76-8745-4c5b-b01b-bf36237cda74",
+    "title": "002. 業務効率化 (中級)",
+    "type": "test",
+    "level_requirement": 5,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "b68169cd-cb11-45c0-8c9f-2cef2460f6fc",
+    "title": "002. 業務効率化 (初級)",
+    "type": "test",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "f9427057-7ecb-4a92-87a7-dfe8f36cc076",
+    "title": "003_Google_Workspace連携（拡張機能）の基本設定",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "251713a0-eb56-458e-84b8-344943fc812c",
+    "title": "003. データ活用 (中級)",
+    "type": "test",
+    "level_requirement": 5,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "7c01a83d-714a-473e-9812-e528c2ee25ab",
+    "title": "003. データ活用 (初級)",
+    "type": "test",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "51731518-c01c-4abe-976b-1c1d569586af",
+    "title": "004_データプライバシー：Googleは私のデータを学習するか？",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "11110e40-55a7-428c-82ac-3983bcbd305c",
+    "title": "004. ノーコード (上級)",
+    "type": "test",
+    "level_requirement": 9,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "75e15656-04f7-45cc-b47c-fb29cf4246c4",
+    "title": "004. ノーコード (中級)",
+    "type": "test",
+    "level_requirement": 5,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "d6971a8e-a73a-4012-b6e9-0238ea88fab9",
+    "title": "004. ノーコード (初級)",
+    "type": "test",
+    "level_requirement": 2,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "637de51c-248c-41a5-8404-5cb515d9a5bb",
+    "title": "005_Geminiアプリとブラウザ版の使い分け",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "7e324f97-59dc-49c4-856f-959036bd063e",
+    "title": "005. コミュニケーション (中級)",
+    "type": "test",
+    "level_requirement": 5,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "ab729bd8-e856-441f-b12d-58e0d8325f98",
+    "title": "005. コミュニケーション (初級)",
+    "type": "test",
+    "level_requirement": 2,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "2bcd5beb-2b9d-4428-aa0f-4e9ac23e23e2",
+    "title": "006_スマートフォンでのGemini活用（カメラ連携・音声対話）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "bd970e6b-c0e5-46a6-b985-ad6d8879387f",
+    "title": "006. キャリアスキル (中級)",
+    "type": "test",
+    "level_requirement": 6,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "748ed387-fcbd-4492-8266-a30ba5d1356f",
+    "title": "006. キャリアスキル (初級)",
+    "type": "test",
+    "level_requirement": 2,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "97e354b5-f55c-4a78-ac3e-d157447d11b1",
+    "title": "007_Chromeブラウザに組み込まれたAI機能",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "82c6cbc9-eb4c-4293-9eb8-d3e703a30bb1",
+    "title": "007. クリエイティブ (初級)",
+    "type": "test",
+    "level_requirement": 3,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "73c783b0-d3ec-4176-b9bc-28e1cf4bd0ec",
+    "title": "008_GoogleのAI原則（AI_Principles）を知る",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "c8fd7977-8834-4921-bc0c-ce22394c0429",
+    "title": "008. 倫理・セキュリティ (初級)",
+    "type": "test",
+    "level_requirement": 3,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "e30450ea-4eae-4bf0-ad19-80a8762bf6dd",
+    "title": "009_LLM（大規模言語モデル）の仕組みを「検索」との違いで理解する",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "d8f19913-0e6f-4ac2-be6b-53941e7c6843",
+    "title": "009. ユースケース (中級)",
+    "type": "test",
+    "level_requirement": 6,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "b5095440-420f-45c2-a4c2-f209a1b9e343",
+    "title": "009. ユースケース (初級)",
+    "type": "test",
+    "level_requirement": 3,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "bd779e85-c05c-456b-94c8-17fca181f244",
+    "title": "010_マルチモーダル（画像・音声・動画認識）の利点",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "991b8308-06cc-455e-9c9a-8c8ca6909e1b",
+    "title": "010. マインドセット (上級)",
+    "type": "test",
+    "level_requirement": 9,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "7c1ceb37-9bbe-41e2-98f4-d857ba1f9a42",
+    "title": "010. マインドセット (中級)",
+    "type": "test",
+    "level_requirement": 6,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "516ab853-1523-4277-8983-8108290e1d25",
+    "title": "010. マインドセット (初級)",
+    "type": "test",
+    "level_requirement": 3,
+    "is_active": true,
+    "category": "Imported"
+  },
+  {
+    "id": "fade41c6-9040-4d0f-a7f2-9cf9b1f91bdf",
+    "title": "011_Geminiにおける「情報のソース」確認方法",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "6ba52ac0-5635-4e4b-be31-a05a46ce6a51",
+    "title": "012_ハルシネーション（嘘）を見抜くためのGoogle検索（Gボタン）活用",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "7ff65020-37bf-4102-bd7d-6a215259034b",
+    "title": "013_社内Googleアカウントでのログインとセキュリティ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "51456ced-f213-4c93-bfeb-f2eb502b0b1e",
+    "title": "014_履歴の管理とオフ設定（オプトアウト）の重要性",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "049fb203-c5db-46a9-b628-8c042b0d8dd1",
+    "title": "015_生成AIが得意な「非定形業務」とは",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "7c38175e-647f-4e5f-be84-bc9981b93a85",
+    "title": "016_生成AIが苦手な「正確性重視業務」とは",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "db840e81-e653-4e2b-b0c5-a08d9dcc6ae9",
+    "title": "017_プロンプトエンジニアリング基礎：Googleが推奨する形式",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "af96b5a5-53bf-49f0-bd9d-fdc0cae09d92",
+    "title": "018_英語プロンプトと日本語プロンプトの精度差",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "4bb47627-7e6c-46bf-89c4-2fd02ac04f72",
+    "title": "019_音声入力による「対話型」思考のススメ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "a5228d30-0391-4ffd-836e-663500212b75",
+    "title": "020_画像認識（Googleレンズ機能）を使った質問テクニック",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "01_環境・基礎"
+  },
+  {
+    "id": "d0df9ac1-9e8d-4570-ab18-b6fad33a65b9",
+    "title": "021_Gmail_×_Gemini：長いスレッドの要約と重要事項抽出",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "0bcef00c-21b5-476f-8c3b-38c00c941003",
+    "title": "022_Gmail_×_Gemini：状況に応じた返信メールのドラフト作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "4265cfb8-1fb5-41b1-b6b4-293c1a8dd4e3",
+    "title": "023_クレーム対応メール：角を立てずに事情を説明する文面生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "5045939a-c2f3-4d5e-9b11-7451a50ad940",
+    "title": "024_営業メール：相手の業界・ニュースを反映した「個」に響く文面",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "15fb9741-39e0-45e9-9af4-bb1f638af354",
+    "title": "025_お詫びメール：経緯説明と再発防止策の構成案出し",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "e989e4bf-17ed-4fb1-a5a7-07098c947ce3",
+    "title": "026_社内チャット（Google_Chat）：簡潔で伝わるメッセージ作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "9372d87a-9754-49a9-b7eb-a35a9153d5d1",
+    "title": "027_Googleドキュメント_×_Gemini：箇条書きからの文章展開",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "1a0d1a1c-ed70-4f8a-a4a1-fc8fa6f150f3",
+    "title": "028_Googleドキュメント_×_Gemini：文章のトーン変更（丁寧・断定的・親しみ）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "54a1b5ce-3c0d-45b8-b380-f3d71f3e0689",
+    "title": "029_議事録ドラフトの自動清書とネクストアクション抽出",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "0bd70114-a521-4c83-9a20-d9720b526ae1",
+    "title": "030_誰にでもわかる「平易な言葉」への書き換え（ユニバーサルデザイン）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "c242d724-3317-41d8-ad34-d97ac6c58aec",
+    "title": "031_翻訳業務：ドキュメント全体の翻訳とニュアンス調整",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "d6687346-65bf-4e01-ba20-852212299e5d",
+    "title": "032_英文メールの添削と「ネイティブらしい」表現への修正",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "ebcfa217-a19e-43cf-9748-c8b8a21b218c",
+    "title": "033_マニュアル作成：手順書の骨子作成とわかりやすい説明文",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "51d39080-f8f1-4e1b-99b8-aa282cdf60e2",
+    "title": "034_報告書作成：事実と考察を分けた構成のアシスト",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "8648c062-5b3e-4303-9de5-d63482e403be",
+    "title": "035_読みにくい文章・難解な論文の「5歳児でもわかる」解説",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "cdd2a81e-904f-4e1b-a7e5-412fca3f817f",
+    "title": "036_誤字脱字・不自然な日本語の校正（AI校閲）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "b4e21ff9-f5e7-4f57-b114-9c19067c58eb",
+    "title": "037_FAQ作成：想定される質問と回答のペア生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "1de82433-85c5-4ab0-be6e-d08c729c1b66",
+    "title": "038_アンケート設問の偏り（バイアス）チェック",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "2f8174a6-c9ed-4ca1-a3f5-72483dc9979c",
+    "title": "039_日報作成：一日の活動ログからの要約と振り返り",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "04e5065c-ac97-44ea-a640-fc06208f626b",
+    "title": "040_個人のタスク管理：優先順位付けの壁打ち",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "02_業務効率化"
+  },
+  {
+    "id": "ac0a69ef-ea48-4a3b-84f2-f6190843b16b",
+    "title": "041_Googleスプレッドシート_×_Gemini：数式・関数の生成（Excelスキル活用）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "58c523d7-141b-4513-aedc-8857c0ceb4e3",
+    "title": "042_複雑な条件分岐（IFS、VLOOKUP代替）のロジック生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "93d1279f-3f4c-45f7-ae4f-952b74e6aea3",
+    "title": "043_正規表現（Regex）の生成によるデータクレンジング",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "7fbf7a76-7889-42a5-b024-98514ac6e60b",
+    "title": "044_テキストデータの分割・整形（「姓_名」の分割など）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "9ed1c8c2-f4b2-486e-9a4e-4a82a9292c40",
+    "title": "045_ダミーデータの生成（テスト用顧客リスト等）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "c063ccac-5d28-4b2e-bd65-68e89321875f",
+    "title": "046_データの傾向分析とインサイト（気づき）の言語化",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "f177a793-8e99-4247-ae71-ff050e2877fe",
+    "title": "047_表形式データからのグラフ提案",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "6803bbbd-0304-4d91-8e29-3ed1ed85eabd",
+    "title": "048_Googleスライド_×_Gemini：プレゼンアウトラインの生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "9540c1af-1cb9-49d7-94d7-61100662c24d",
+    "title": "049_提案書スライドの1枚ごとの構成案出し",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "76aa2dc3-2aca-4b51-a252-b80410e926ee",
+    "title": "050_スライド用画像の選定・生成（Gemini_Image_FX活用）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "85d383f8-8f51-43d4-8cb4-30c2664dccc0",
+    "title": "051_プレゼン用スピーカーノート（台本）の作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "353fa065-c96e-45b0-a1da-7726f1cb0484",
+    "title": "052_想定問答集（Q&A）の作成によるプレゼン準備",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "e0444ec8-c914-489a-9a9d-a570d7601694",
+    "title": "053_既存のドキュメントからスライドへの変換テクニック",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "06beac14-b8e1-4174-81a7-f3112e7a64a8",
+    "title": "054_会議資料の「要点1枚まとめ」作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "e9ade6d5-83f4-44fc-b798-85ee7e8c0d2a",
+    "title": "055_カレンダー連携：スケジュールの最適化提案",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "4b52096a-dcf8-46a8-81c3-be9623906d38",
+    "title": "056_GAS（Google_Apps_Script）の基礎：AIにコードを書かせる",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "dd5af210-0183-4f52-8667-10414a9efcab",
+    "title": "057_Formsの回答をGmailに自動通知するスクリプト生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "2b82ab73-508c-4d8a-bdbf-d7201cef94e6",
+    "title": "058_スプレッドシートの特定条件でチャット通知するスクリプト",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "6be5ca44-dba4-4a34-8861-4e223de7e6b0",
+    "title": "059_毎日決まった時間にドキュメントをコピーする自動化",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "cdb7d741-c201-4bb4-95e2-1748ec3a64e8",
+    "title": "060_プログラミング知識ゼロからのGASデバッグ方法",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "03_データ活用"
+  },
+  {
+    "id": "506ddff1-1889-4c9c-a9d4-91edec02c93d",
+    "title": "061_AppSheet_×_Gemini：自然言語でのアプリ作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "f42d1edd-02b7-4fe3-a1a8-9012b1eb9172",
+    "title": "062_スプレッドシートの顧客台帳をスマホアプリ化する",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "51b5e41d-6f84-4a2a-a5f2-d928f99514fc",
+    "title": "063_在庫管理アプリのフィールド設計をAIと考える",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "c5cc77ea-1720-4817-b854-33a9622dea57",
+    "title": "064_日報アプリの作成と自動化ワークフロー",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "d55b4949-e52d-4ec3-bd03-3924e73b3927",
+    "title": "065_承認フロー（ワークフロー）の実装アイデア",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "72b49650-3be8-4875-ac79-d2fc19568413",
+    "title": "066_リレーショナルデータベース（RDB）の概念をAIに学ぶ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "29f2ff03-e66f-4d1c-8810-9c3d38c845a6",
+    "title": "067_アプリのUIUX改善案をGeminiに聞く",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "3c566155-4af7-4295-add0-2ef9f555b47f",
+    "title": "068_エラーメッセージの意味と対処法をAIに聞く",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "c937b058-5596-4dda-aa1f-1b4e68bcd70d",
+    "title": "069_ZapierMake等のノーコード連携ツールの活用アイデア",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "135e292e-2828-4dab-9bc3-0ddd5ace27ad",
+    "title": "070_Googleフォームの条件分岐（セクション移動）の設計",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "78064f98-4fb9-4d03-a8c3-0fd82a2a5bdc",
+    "title": "071_社内ポータル（Googleサイト）の構成案と文章作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "0f86aa71-e5bc-4839-b123-7bf79d46a100",
+    "title": "072_問い合わせフォームの自動振り分けロジック構築",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "55900913-dbaa-41de-b8d8-5a472e64c846",
+    "title": "073_ルーチンワークの「自動化可否」判断基準",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "9c8b18d8-7416-4fb1-a554-c18642449a76",
+    "title": "074_AIを用いた業務プロセス（BPM）の可視化",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "dfe47b94-56e7-4c36-a738-e2dd26479592",
+    "title": "075_ノーコードツール選定の壁打ち",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "a17db382-233e-403e-bb06-1856951e9593",
+    "title": "076_データベース移行（Excel→AppSheet）の計画立案",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "22593f97-aec3-4265-9665-940d706c0e13",
+    "title": "077_アプリ運用ルールの策定支援",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "72006226-5855-49d5-80c0-93abb4713121",
+    "title": "078_トラブルシューティングガイドの自動生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "a7074f4b-d128-47fa-8f2c-634d770c767c",
+    "title": "079_ユーザーテストのシナリオ作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "5460a8d4-3dd5-4fdf-9594-edfb14f42472",
+    "title": "080_アプリ説明書の自動生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "04_ノーコード"
+  },
+  {
+    "id": "72fa6d6e-ab98-40a2-a473-d1f9c63290dd",
+    "title": "081_顧客ペルソナ（架空の顧客像）の詳細設定と対話シミュレーション",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "71057826-0880-440a-9e85-139eb4634f25",
+    "title": "082_クレーマー対応ロールプレイング（AIに客役をやらせる）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "b1e57f39-54c0-4a0b-9479-00f3f8e5320d",
+    "title": "083_交渉・説得のロジック構築（ストローマン論法対策など）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "b29164a5-23d6-4686-aadb-5b9aa8475632",
+    "title": "084_部下へのフィードバック面談のシナリオ作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "dbd91459-760a-4155-bf2e-902daafa66ef",
+    "title": "085_上司への報告・相談のタイミングと伝え方シミュレーション",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "da04b608-e971-41f3-b591-2435e096a686",
+    "title": "086_メンターとしてのGemini：悩み相談と解決策の提示",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "4ed9e7c3-1b3a-42b4-b825-db010a21bd91",
+    "title": "087_タイプ別コミュニケーション（DiSC分析等）の文面調整",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "599262c1-08eb-44b1-b0e1-3f220339f283",
+    "title": "088_相手の理解度に合わせた説明レベルの調整",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "794853c2-3d45-4a42-ba45-b4b7c6c32ce0",
+    "title": "089_外国人メンバーとの異文化コミュニケーション支援",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "6d68594f-339a-4481-b66c-8fedb2fe9cf1",
+    "title": "090_専門用語を使わない説明への「言い換え」トレーニング",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "230e6b7e-0777-4769-83db-742df064c573",
+    "title": "091_感情分析：受信メールの感情（怒り、焦り）を読み取る",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "fb15a720-9fc5-4238-8a11-934b5155a08f",
+    "title": "092_共感を示す返信フレーズのバリエーション",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "dd0b43a0-1d5f-4765-a95f-52b6fa9b20f6",
+    "title": "093_アイスブレイクの話題生成（相手の興味分野に合わせて）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "3ee14c2c-e204-4ca4-954a-66cbf0239594",
+    "title": "094_お祝いメッセージ・季節の挨拶のパーソナライズ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "99a0d2c9-ba07-40ab-9680-cd7d41588e11",
+    "title": "095_個別学習プランの作成（AIチューター）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "685db83d-80b8-4a5d-9120-d8fb2a4ae4da",
+    "title": "096_自分の思考の癖（バイアス）を指摘してもらう",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "559f1c5e-6373-4a9f-bdba-a08358342d1b",
+    "title": "097_「もし〜だったらどうなる？」のシミュレーション思考",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "a31f7dff-d628-4bd4-af0c-065994c6a174",
+    "title": "098_ブレストパートナー：自分にない視点の提供",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "f9cb86da-75a7-4891-9b48-a4d468bbc668",
+    "title": "099_ソクラテスメソッド（問答法）による思考の深掘り",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "45db87dc-e262-4ea7-9ea0-7464ec4ae8d9",
+    "title": "100_自分専属の「壁打ち相手」としてのプロンプト設定",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "05_コミュニケーション"
+  },
+  {
+    "id": "2f65c569-b277-45aa-a322-cf583eae72ae",
+    "title": "101_AIに代替される業務・代替されない業務の棚卸し",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "a6629218-50a1-46de-adc8-5c5e197ea405",
+    "title": "102_自分だけの強み（USP）の再発見とAI掛け合わせ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "66a61ef1-9bd1-4ba4-bc8a-0a9ce33187d3",
+    "title": "103_AI時代の必須スキル「問いを立てる力」の磨き方",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "0e105516-6bf9-4543-b358-28704df22328",
+    "title": "104_言語化能力（バーバルスキル）の重要性とトレーニング",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "3d56cee3-4ee7-4447-a740-a6ea0abcdc3c",
+    "title": "105_編集力・キュレーション力の高め方",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "8a5a9406-f32b-4fa0-b7c7-18c7345e8401",
+    "title": "106_AIマネジメントスキル（AIへの明確な指示出し）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "574aa362-b7af-45b4-b693-ef531dde5214",
+    "title": "107_変化対応力（アダプタビリティ）の自己診断",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "4cf28cf1-600b-4ceb-848d-7528d9f92fe0",
+    "title": "108_キャリアプランの作成とAIによる添削",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "409c5e0c-6298-4c3b-8f0b-e2da51d184ac",
+    "title": "109_職務経歴書の魅力的な書き方とブラッシュアップ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "9530ca33-9a65-4586-a97f-4a1a33acb2a3",
+    "title": "110_面接対策：AI面接官による模擬面接",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "4b490d94-7368-4106-bebd-f27f367950a5",
+    "title": "111_自己PRの作成：客観的な視点を取り入れる",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "245d4778-0870-4255-8b72-1ab9cb7a0477",
+    "title": "112_資格取得学習へのAI活用（問題作成・重要語句解説）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "00c095c7-e66f-4fdf-b00b-91240a4125c8",
+    "title": "113_英語学習の最適化：自分専用の単語帳・会話練習",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "9de899fa-1a89-4eaf-ba0e-92ae3b43d7d6",
+    "title": "114_情報収集力：質の高いインプットの選定",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "1119c2b1-af3c-4db4-95e2-0db1ba7ccd8c",
+    "title": "115_クリティカルシンキング（批判的思考）のAI活用練習",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "06c4dd16-e328-48b9-8c28-e5050fcada61",
+    "title": "116_アート思考・デザイン思考の基本とAI活用",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "b1380888-43d7-47fa-8d5a-0a0719e97cc0",
+    "title": "117_タイムマネジメント：AIによる「やらないこと」決定",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "862aa590-382b-49c0-9bf6-d83df79390d9",
+    "title": "118_モチベーション管理と習慣化のサポート",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "490c23a4-a0bf-45e0-9016-49b11d37003f",
+    "title": "119_副業・パラレルキャリアの可能性探索",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "7f977301-dec9-44b8-a674-f434f6fe28de",
+    "title": "120_社内起業・新規プロジェクトの企画立案",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "06_キャリアスキル"
+  },
+  {
+    "id": "b54373f3-877d-4971-a923-0e6e534a412c",
+    "title": "121_Gemini（Imagen_3）による画像生成の基本",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "cfdcda47-e55e-4fd5-841d-f702bc9e2dcf",
+    "title": "122_プロンプトなしでの画像生成（日本語会話形式）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "ee248515-e633-43bc-9b10-92307706ba46",
+    "title": "123_画像の一部を修正・拡張する（インペインティングアウトペインティング）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "af13f497-ea06-4260-9428-4db1bdd5dc87",
+    "title": "124_ソーシャルメディア投稿のバリエーション作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "e4f60e30-4f3e-498f-98ba-23c63b7c6766",
+    "title": "125_YouTube動画の企画・台本・サムネイル作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "1a3cb14a-ffa5-4f29-bd08-d44f4d7b4c38",
+    "title": "126_ブログ・SEO記事の構成とリライト",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "e4e385a6-d093-449e-9c96-f675d9043adc",
+    "title": "127_キャッチコピーの大量生成とABテスト案",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "be5c407f-17d5-49e2-b093-e6cb9c01d496",
+    "title": "128_ブランド名のネーミングとロゴイメージ生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "d74ed219-bd64-4234-acb9-d8d7113abd98",
+    "title": "129_プレスリリースの自動執筆",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "d42e5eea-26c4-4a74-a714-6883e0e608da",
+    "title": "130_チラシ・ポスターのレイアウト案",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "9f14bac9-3a5e-4919-ba59-4ba48742a8e1",
+    "title": "131_インタビュー記事の文字起こしと要約・編集",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "5bbb0523-2bc5-48ce-bcdc-1ab63251fa0a",
+    "title": "132_動画のテロップ・字幕の自動生成と翻訳",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "ae9f273d-202b-4267-af9a-15fcff47f4f2",
+    "title": "133_音楽・BGMのイメージを言語化して探す",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "dee7bf0f-c0be-4ffe-86af-45e957ca69b2",
+    "title": "134_長文コンテンツの「3行まとめ」と「タイトル」",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "9b2994e8-ad40-4dce-88c8-6f0d4aa12d8a",
+    "title": "135_メルマガ・LINE公式アカウントの配信シナリオ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "6b1dc0b4-e254-41f1-800c-5861a0152724",
+    "title": "136_LP（ランディングページ）の構成とワイヤーフレーム",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "3e7489bf-d64f-48f6-9fd3-e5869f4736e5",
+    "title": "137_ユーザーレビューの分析と改善点の抽出",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "5a875d8e-da7f-4e9d-ac5d-8a99c271261c",
+    "title": "138_競合サイトの分析と差別化ポイントの発見",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "6e7468fa-0a85-4e03-932e-14ea3bd563a7",
+    "title": "139_トレンド調査とコンテンツへの反映",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "d0e9dd15-5b10-4240-b43f-094ee7c33371",
+    "title": "140_クリエイティブ制作のディレクション（AIへの指示）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "07_クリエイティブ"
+  },
+  {
+    "id": "746a39d1-5426-49c7-8d7e-7aad5bdd3998",
+    "title": "141_入力データはどこへ行く？（APIとWeb版の違い）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "82be8c22-518b-431c-9271-259b348644c4",
+    "title": "142_個人情報（PII）を絶対に入力してはいけない理由",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "6b668d65-ebad-4f6b-93d3-8ff73b7b22e5",
+    "title": "143_機密情報（NDA対象）の取り扱いルール",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "6297e772-8f31-4d49-a559-654cd36a0933",
+    "title": "144_生成物の著作権は誰にあるか？（最新の法的解釈）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "f66ec9d5-a40f-4fcc-9d52-93e5b22c7731",
+    "title": "145_商用利用のリスクチェックリスト",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "10327441-2c7a-4d85-805a-9928bf1ab310",
+    "title": "146_差別・偏見を含む生成物のチェック方法",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "6adc8ebb-365e-4cfc-a9ce-404045f30573",
+    "title": "147_誤情報（ハルシネーション）の拡散防止責任",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "88fa40af-65b8-4fd7-9806-ed9b34a49ce9",
+    "title": "148_AIカニバリズム（AIがAIを学習する問題）とは",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "fad56f4e-5233-4d64-9aae-1958c6263a62",
+    "title": "149_シャドーAI利用の禁止と認可ツールの範囲",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "ba595621-d6ef-48a7-a631-98e6a6ea39e1",
+    "title": "150_ディープフェイクへの警戒とリテラシー",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "3154c122-3590-47da-abb9-0e098e96e283",
+    "title": "151_プロンプトインジェクション攻撃への理解",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "25f5469f-75d9-4442-8d50-d3a22de34585",
+    "title": "152_生成AI利用ポリシー（社内規定）の遵守",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "f86f98a4-a327-4cdc-947e-028e030c24ab",
+    "title": "153_引用・出典の明記ルール",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "fd6741d5-325a-462a-be45-bb45968686b9",
+    "title": "154_AI生成物であることを開示すべきケース",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "a575a7bd-9ac1-430c-8e08-974919e65744",
+    "title": "155_環境問題（学習コスト）への配慮",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "601eecc4-2d02-419e-95d0-6829231e2944",
+    "title": "156_子供の写真などを生成・学習させない倫理観",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "d128834d-6086-4e31-a111-b61a83183fa0",
+    "title": "157_第三者の権利侵害（商標・肖像）チェック",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "33c89074-a07f-4c7c-9319-e8e0c87b2bec",
+    "title": "158_セキュリティ設定（2段階認証等）の再確認",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "c6f5d080-e02d-4119-b965-e2c8a977404c",
+    "title": "159_インシデント発生時の報告フロー",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "094c760b-5dd2-40ac-b8d7-bf28f98576c7",
+    "title": "160_コンプライアンス研修へのAI活用",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "08_倫理・セキュリティ・リスク"
+  },
+  {
+    "id": "1a893169-c5b9-4961-8390-ec065859a01b",
+    "title": "161_営業：商談準備における企業分析の深掘り",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "b4bbe191-d7eb-432f-82a5-e1ae9031a47d",
+    "title": "162_営業：アイスブレイク用業界ニュースの収集",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "6bf2f405-cfba-46fd-ad8b-fd784b93b0ef",
+    "title": "163_人事：採用ページQ&Aの自動生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "8e7e9e57-f397-4531-aa7f-da7e92be540f",
+    "title": "164_人事：オンボーディング資料の個別最適化",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "0daf5d2e-6977-44ef-a34b-674f4eb318a5",
+    "title": "166_総務：備品管理・発注リストのGAS自動化",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "e48d7d83-3c2a-4c5c-a2bd-865e0defe061",
+    "title": "167_経理：勘定科目の不明点問い合わせ",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "e6422977-8c1c-4e9b-a76d-067f1b190a33",
+    "title": "168_経理：インボイス制度対応のQ&A",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "921b1733-7173-4b90-8639-4f24eb3cde91",
+    "title": "169_経営：市場調査レポートの要約と分析",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "a14f4a28-8da8-476c-8717-10a66a335ebd",
+    "title": "170_経営：新規事業のリーンキャンバス作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "75f818d6-a1be-4989-a1db-fa76913985dd",
+    "title": "171_CS：問い合わせ傾向の月次レポート作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "26b675ba-7c8f-4887-aadf-6f45d80e41cb",
+    "title": "172_開発：仕様書の曖昧さチェック",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "53070d07-97a8-4693-b704-de4c2adb624e",
+    "title": "173_開発：ダミーデータ（JSON）の大量生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "89a7218d-4b13-4e57-a446-dfe7c044a058",
+    "title": "174_PM：プロジェクトリスクの洗い出し",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "59b84d82-eb78-4bab-945d-53a0e291be4f",
+    "title": "175_PM：WBS（作業分解構成図）の生成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "ce7469e7-c6b3-4738-9594-6da5cb7c3d4c",
+    "title": "176_マーケ：競合サイトのSWOT分析",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "729c9daa-0c5d-4306-bd60-33abe681b823",
+    "title": "177_マーケ：SEOキーワードのクラスタリング",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "dee3848e-b773-44e3-8155-8db64ea12ab2",
+    "title": "178_あらゆる職種：日々の「検索時間」の削減",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "09_業界別・職種別ユースケース"
+  },
+  {
+    "id": "54f63a43-7a97-4c7a-b5cc-a6e74da335a7",
+    "title": "179_AIは仕事を奪うのか？（補完と代替の境界線）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "7690047a-8caa-4728-a308-ebc1cb91a6a8",
+    "title": "180_「AIネイティブ」世代との付き合い方",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "58fb4c99-e697-4ade-a0ef-e37ca17e7d02",
+    "title": "181_テクノロジーの進化速度への適応",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "2aa50c19-4f0e-4ab9-8c22-0d8322690067",
+    "title": "182_学び続ける力（Learnability）の重要性",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "43b41dcc-a933-4e94-9afb-c818e035c215",
+    "title": "183_人間にしかできない「決断」と「責任」",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "ca9423ae-12d3-4985-bdcb-7909a350680f",
+    "title": "184_感情労働とAIの役割分担",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "70cafe3b-bf3f-4a85-8a74-b6008950d5d3",
+    "title": "185_コミュニティ活用と情報交換",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "f1f88ca8-749d-482d-a4cb-ae6537bfccdb",
+    "title": "186_Googleの最新AI発表を追う方法（IO等）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "a516be45-5eef-46e3-8dce-2f4a4bb18dd4",
+    "title": "187_新機能（Gemini_Advanced等）の試用と評価",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "0352c507-4947-4147-9da5-3780b9995295",
+    "title": "188_自分なりの「AI活用ルール」を作る",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "bc0c3f66-69b3-4911-b481-62448acc6d31",
+    "title": "189_チームでのプロンプト共有ライブラリ作成",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "e143be7c-1e49-4df1-84df-a2bceedde3a8",
+    "title": "190_失敗を恐れず実験するマインドセット",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "bc8b25f1-39e0-4b39-b424-4689cf2f4af3",
+    "title": "191_デジタルウェルビーイング（使いすぎない）",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "4a232972-13f8-40a7-9683-90227dda0951",
+    "title": "192_フィジカル（身体性）の価値再認識",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "e08fccdf-9002-465b-8139-66dca4a50e1b",
+    "title": "193_オフラインコミュニケーションの質向上",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "84e1c4ca-7419-423d-9f7f-d4855781ec6f",
+    "title": "194_創造性（クリエイティビティ）の再定義",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "81d87034-3b35-4822-8171-27e0aa3cbdcf",
+    "title": "195_幸福（Well-being）とAIの関係",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "e84be9c4-6d8a-4fa9-a931-cddb5296bee5",
+    "title": "196_社会課題解決へのAI活用",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "bb092339-cde2-4218-9475-dcbad8e8fb40",
+    "title": "197_2030年の働き方予想図",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "2777445d-e2b1-4691-86fa-60606c7ecff7",
+    "title": "198_自社のAIトランスフォーメーション（AX）への貢献",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "3714210d-9e5f-4c5b-9ac5-2d7e56840f8a",
+    "title": "199_次世代のリーダーシップ像",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  },
+  {
+    "id": "99504fc7-4228-462b-8643-67f7bb7619c4",
+    "title": "200_今日から始める「小さなAI習慣」リスト",
+    "type": "lecture",
+    "level_requirement": 1,
+    "is_active": true,
+    "category": "10_未来への準備・マインドセット"
+  }
+]

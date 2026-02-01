@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Googleスプレッドシートで複雑な計算や関数を利用したい場合、Geminiを最も効果的に活用する方法はどれですか？",single,"関数名を全て暗記して手打ちする","「やりたい処理」や「得たい結果」を日本語でGeminiに伝え、適切な関数式を生成してもらう","スプレッドシートのヘルプメニューを端から読む","電卓で計算して、結果を数字で入力する",2,"Geminiに自然言語で要件を伝えることで、適切な関数や数式を提案してもらえるため、関数の詳細な記法を覚えていなくても高度な計算が可能になります。",1,10,"スプレッドシート,関数生成,効率化,Excel活用","データ活用"

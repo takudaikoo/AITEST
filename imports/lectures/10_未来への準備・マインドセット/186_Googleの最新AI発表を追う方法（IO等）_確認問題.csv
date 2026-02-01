@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"GeminiなどのGoogle製AIに関する最新機能や方針をもっとも早く、かつ正確に知るための一次情報源として適切なイベントやメディアはどれですか？",single,"噂話掲示板","Google I/O（年次開発者会議）やGoogle Japan Blogなどの公式発表","競合他社のCM","10年前の新聞",2,"Google I/Oは、Googleがその年の技術戦略を発表する最大のイベントです。ここでの発表（Keynote）や公式ブログをチェックすることが、将来の変化を先読みする最も確実な方法です。",1,10,"Google,情報収集,トレンド","未来への準備・マインドセット"

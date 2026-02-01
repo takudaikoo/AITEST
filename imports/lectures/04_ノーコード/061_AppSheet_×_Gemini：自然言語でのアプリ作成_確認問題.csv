@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Googleのノーコードプラットフォーム「AppSheet」で、AI（Gemini）を活用してアプリを作成する最大のメリットはどれですか？",single,"プログラミング言語（JavaやPython）を完璧に習得しないと使えない","「在庫管理アプリを作って」のように自然言語で指示するだけで、データの構造やアプリ画面を自動生成してくれる","作成したアプリはGoogle社員しか使えない","アプリのアイコンを必ず自分の顔写真に設定される",2,"AppSheetのAI機能を使えば、データベース設計やコーディングの知識がなくても、やりたいことを文章で伝えるだけでアプリのプロトタイプを自動生成できます。",1,10,"ノーコード,AppSheet,アプリ開発","ノーコード"

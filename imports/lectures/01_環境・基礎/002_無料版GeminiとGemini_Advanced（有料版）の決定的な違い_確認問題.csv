@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Gemini Advanced（有料版）の最大の特徴であり、無料版との決定的な違いとして正しいものはどれですか？",single,"応答速度が無料版よりも圧倒的に遅いが、料金が安い","Google Workspaceとの連携ができない","「Gemini 1.5 Pro」などの最高性能モデルを搭載し、超長文の読み込みや複雑な推論が可能","画像生成機能が削除されている",3,"Gemini Advancedは最高性能モデル（Pro/Ultra等）を搭載しており、複雑なタスクや長文処理（大きなコンテキストウィンドウ）に優れています。",1,10,"Gemini,Gemini Advanced,モデル比較","環境・基礎"

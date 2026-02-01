@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Geminiの画像認識機能（Googleレンズ連携）が最も役立つシーンはどれですか？",single,"頭の中で考えている抽象的なイメージを言語化したい時","言葉で説明するのが難しい機器の操作法や、手書き文字を即座に調べたい時","昨日の夕食のメニューを思い出したい時","スマホのバッテリー残量を知りたい時",2,"画像認識機能は、視覚情報を直接AIに入力できるため、言葉での説明が困難な形状の検索や、手書き文字のデジタル化などに最適です。",1,10,"画像認識,Googleレンズ,効率化","環境・基礎"

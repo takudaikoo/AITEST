@@ -1,0 +1,2 @@
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"Googleドキュメントで文章を作成する際、Geminiの「Help me write（筆記サポート）」機能を効果的に使う方法はどれですか？",single,"白紙の状態から、何も指示せずに完璧な論文を書かせる","書きたいポイントを「箇条書き」にしておき、それを選択してAIに文章化（肉付け）させる","他人の書いた文章をコピーして、著作権を無視して書き換えさせる","手書きの文字をカメラで読み取って入力させる",2,"Geminiは、ユーザーが入力した「箇条書き（骨子）」をもとに、文脈を補って自然な文章に展開（肉付け）する作業を得意としています。",1,10,"ドキュメント作成,文章展開,Help me write","業務効率化"
