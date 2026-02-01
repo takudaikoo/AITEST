@@ -1,14 +1,14 @@
 export const LEVEL_THRESHOLDS = [
-    { level: 1, min: 0, rank: "Beginner" },
-    { level: 2, min: 300, rank: "Beginner" },
-    { level: 3, min: 1000, rank: "Standard" },
-    { level: 4, min: 3000, rank: "Standard" },
-    { level: 5, min: 6000, rank: "Standard" },
-    { level: 6, min: 10000, rank: "Expert" },
-    { level: 7, min: 15000, rank: "Expert" },
-    { level: 8, min: 22000, rank: "Master" },
-    { level: 9, min: 32000, rank: "Master" },
-    { level: 10, min: 50000, rank: "Master" },
+    { level: 1, min: 0, rank: "ビギナー" },
+    { level: 2, min: 300, rank: "ビギナー" },
+    { level: 3, min: 1000, rank: "スタンダード" },
+    { level: 4, min: 3000, rank: "スタンダード" },
+    { level: 5, min: 6000, rank: "スタンダード" },
+    { level: 6, min: 10000, rank: "エキスパート" },
+    { level: 7, min: 15000, rank: "エキスパート" },
+    { level: 8, min: 22000, rank: "マスター" },
+    { level: 9, min: 32000, rank: "マスター" },
+    { level: 10, min: 50000, rank: "マスター" },
 ];
 
 export function calculateLevel(xp: number) {

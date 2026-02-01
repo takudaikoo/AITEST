@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 import { calculateLevel } from "@/lib/level-utils";
+import { calculateXpReward } from "@/lib/xp-config";
 
 // Removed local RANK_THRESHOLDS in favor of shared level-utils
 
@@ -77,10 +78,16 @@ export async function completeActivity(
 
         if (xpReward === null || xpReward === undefined) {
             // Fallback defaults if column is null (migration safety)
-            if (program?.type === 'lecture') xpReward = 10;
-            else if (program?.type === 'test') xpReward = 50;
-            else if (program?.type === 'exam') xpReward = 100;
-            else xpReward = 10;
+            // Use config-based calculation with defaults (Level 1, etc.)
+            if (program?.type) {
+                // If type is test/exam, we don't know difficulty/rank here easily without more columns
+                // So we fallback to Level 1 Beginner equivalent
+                // Or existing hardcoded values if safer?
+                // Let's use the new config for consistency, assuming Level 1 Beginner
+                xpReward = calculateXpReward(program.type, 1);
+            } else {
+                xpReward = 10;
+            }
         }
 
         // Zero XP if not passed

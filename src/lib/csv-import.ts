@@ -1,5 +1,5 @@
 import Papa from 'papaparse';
-import { Question } from '@/types/database';
+import { Question } from '../types/database';
 
 export interface CsvQuestionInput {
     content: string;

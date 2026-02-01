@@ -1,0 +1,31 @@
+﻿# 186. Googleの最新AI発表を追う方法（I/O等）
+
+## 1. はじめに
+Geminiの開発元であるGoogleは、毎年5月頃に開発者会議**「Google I/O」**を開催します。
+ここで発表される技術が、数ヶ月後の私たちの仕事を一変させる可能性があります。
+未来の予告編を見るために、情報源を押さえておきましょう。
+
+![Google I/O情報収集](./../attachments/10_186_google_updates_io_1769365138642.png)
+
+## 2. 公式情報源リスト
+*   **Google Japan Blog**: 日本語で読める公式ブログ。必須。
+*   **Google DeepMind Blog**: 最先端の研究内容（英語）。
+*   **Google I/O 公式YouTube**: 基調講演（Keynote）だけでも見れば、その年のトレンドがわかります。
+
+## 3. Geminiに要約させる
+「今年のGoogle I/Oの基調講演の書き起こし記事（URL）を要約して。
+特に**ビジネスマンの働き方に影響する新機能**を3つ教えて」
+英語の一次情報も、Geminiに翻訳・要約させれば怖くありません。
+
+---
+
+## 4. まとめ
+情報は、川上で掴むほど価値があります。
+「ニュースで見た」頃にはもう遅い。
+一次情報源を定点観測し、誰よりも早く波に乗りましょう。
+
+---
+
+content,question_type,option_1,option_2,option_3,option_4,correct_indices,explanation,difficulty,points,tags,category
+"GeminiなどのGoogle製AIに関する最新機能や方針をもっとも早く、かつ正確に知るための一次情報源として適切なイベントやメディアはどれですか？",single,"噂話掲示板","Google I/O（年次開発者会議）やGoogle Japan Blogなどの公式発表","競合他社のCM","10年前の新聞",2,"Google I/Oは、Googleがその年の技術戦略を発表する最大のイベントです。ここでの発表（Keynote）や公式ブログをチェックすることが、将来の変化を先読みする最も確実な方法です。",1,10,"Google,情報収集,トレンド","未来への準備・マインドセット"
+

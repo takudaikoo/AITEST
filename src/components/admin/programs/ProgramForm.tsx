@@ -65,6 +65,7 @@ import { formatJST, parseAsJST } from "@/lib/date-utils";
 import { QuestionSelector } from "./QuestionSelector";
 import { parseAndValidateQuestions } from "@/lib/csv-import";
 import { OrderedQuestionsList } from "./OrderedQuestionsList";
+import { calculateXpReward, Difficulty, RankTier } from "@/lib/xp-config";
 
 // Helper: UTC string from DB -> JST string for Form (YYYY-MM-DDTHH:MM)
 const toJSTString = (isoString?: string | null) => {
@@ -87,6 +88,11 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
   const [questions, setQuestions] = useState<any[]>([]); // Use appropriate Type
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<Set<string>>(new Set());
   const [orderedQuestionIds, setOrderedQuestionIds] = useState<string[]>([]);
+
+  // XP Calculation States (UI only, not saved to DB directly)
+  const [difficulty, setDifficulty] = useState<Difficulty>('BEGINNER');
+  const [rankTier, setRankTier] = useState<RankTier>('BEGINNER');
+
   const supabase = createClient();
 
   useEffect(() => {
@@ -252,15 +258,27 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
   }, [questionCsvContent, form]);
 
   const watchType = form.watch("type");
+  const watchLevel = form.watch("level_requirement");
 
-  // Auto-set default XP based on Type if adding new
+  // Auto-calculate XP when dependencies change
   useEffect(() => {
-    if (!initialData) {
-      if (watchType === 'lecture') form.setValue('xp_reward', 10);
-      else if (watchType === 'test') form.setValue('xp_reward', 50);
-      else if (watchType === 'exam') form.setValue('xp_reward', 100);
+    // Only auto-calc if user hasn't manually overridden (optional, strictly enforcing for now for consistency)
+    // Or maybe we just always update? Let's always update for now to ensure rules.
+    // If needed, we can add a "manual override" checkbox later.
+
+    let xp = 0;
+    if (watchType === 'lecture') {
+      xp = calculateXpReward('lecture', watchLevel);
+    } else if (watchType === 'test') {
+      xp = calculateXpReward('test', watchLevel, difficulty);
+    } else if (watchType === 'exam') {
+      xp = calculateXpReward('exam', watchLevel, undefined, rankTier);
     }
-  }, [watchType, initialData, form]);
+
+    if (xp > 0) {
+      form.setValue('xp_reward', xp);
+    }
+  }, [watchType, watchLevel, difficulty, rankTier, form]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
@@ -390,6 +408,32 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
             )}
           />
         </div>
+
+        <FormField
+          control={form.control}
+          name="level_requirement"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>レベル要件 (Lv. {field.value})</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="range"
+                    min={1}
+                    max={10}
+                    step={1}
+                    {...field}
+                    onChange={(e) => field.onChange(Number(e.target.value))}
+                    className="w-full"
+                  />
+                  <span className="text-lg font-bold w-12 text-center">{field.value}</span>
+                </div>
+              </FormControl>
+              <FormDescription>受講に必要なレベル（XP計算にも使用されます）</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -544,6 +588,47 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
               )}
             />
 
+            {/* Test Difficulty Selector */}
+            {watchType === 'test' && (
+              <FormItem>
+                <FormLabel>難易度 (XP計算用)</FormLabel>
+                <Select value={difficulty} onValueChange={(v) => setDifficulty(v as Difficulty)}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="BEGINNER">初級 (x1.0)</SelectItem>
+                    <SelectItem value="INTERMEDIATE">中級 (x1.5)</SelectItem>
+                    <SelectItem value="ADVANCED">上級 (x2.0)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>レベルと難易度でXPが自動計算されます</FormDescription>
+              </FormItem>
+            )}
+
+            {/* Exam Rank Tier Selector */}
+            {watchType === 'exam' && (
+              <FormItem>
+                <FormLabel>ランク帯 (XP計算用)</FormLabel>
+                <Select value={rankTier} onValueChange={(v) => setRankTier(v as RankTier)}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="BEGINNER">Beginner</SelectItem>
+                    <SelectItem value="STANDARD">Standard</SelectItem>
+                    <SelectItem value="EXPERT">Expert</SelectItem>
+                    <SelectItem value="MASTER">Master</SelectItem>
+                  </SelectContent>
+                </Select>
+                <FormDescription>ランク帯でXPが決定されます</FormDescription>
+              </FormItem>
+            )}
+
             <FormField
               control={form.control}
               name="xp_reward"
@@ -551,9 +636,9 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
                 <FormItem>
                   <FormLabel>獲得XP</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input type="number" {...field} readOnly className="bg-muted" />
                   </FormControl>
-                  <FormDescription>合格時に付与される経験値</FormDescription>
+                  <FormDescription>自動計算されます</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -571,8 +656,9 @@ export function ProgramForm({ initialData, defaultType }: ProgramFormProps) {
                   <FormItem>
                     <FormLabel>獲得XP (受講完了時)</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" {...field} readOnly className="bg-muted" />
                     </FormControl>
+                    <FormDescription>講習は一律 {calculateXpReward('lecture', 1)} XP</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
