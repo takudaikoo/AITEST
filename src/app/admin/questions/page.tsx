@@ -1,3 +1,4 @@
+
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil } from "lucide-react";
@@ -11,7 +12,6 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { QuestionImporter } from "../../../components/admin/questions/QuestionImporter";
 
 export default async function QuestionsPage() {
     const supabase = createClient();
@@ -45,13 +45,13 @@ export default async function QuestionsPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight">問題管理</h2>
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">問題管理</h2>
+                    <p className="text-muted-foreground">
+                        登録されている問題の一覧です（全 {questions?.length || 0} 件）
+                    </p>
+                </div>
                 <div className="flex items-center gap-2">
-                    {/* <QuestionImporter /> */}
-                    {/* Manual add button - potentially linking to a new standalone question form page if needed, 
-                        but for now let's focus on CSV or keep the modal logic if adaptable. 
-                        Actually, user asked to separate screens. So a new /admin/questions/new page is best. 
-                    */}
                     <Button asChild>
                         <Link href="/admin/questions/new">
                             <Plus className="mr-2 h-4 w-4" />
@@ -61,18 +61,53 @@ export default async function QuestionsPage() {
                 </div>
             </div>
 
-            {/* DEBUG MODE */}
-            <div className="bg-slate-100 p-4 rounded overflow-auto max-h-[500px]">
-                <pre>{JSON.stringify(questions?.slice(0, 3), null, 2)}</pre>
-            </div>
-
-            {/* 
             <div className="rounded-md border bg-card">
                 <Table>
-                  ... (commented out) ...
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[100px]">ID</TableHead>
+                            <TableHead>問題文</TableHead>
+                            <TableHead className="w-[150px]">カテゴリー</TableHead>
+                            <TableHead className="w-[100px]">タイプ</TableHead>
+                            <TableHead className="text-right">操作</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {questions?.map((q) => (
+                            <TableRow key={q.id}>
+                                <TableCell className="font-mono text-xs text-muted-foreground">
+                                    {q.id.substring(0, 8)}...
+                                </TableCell>
+                                <TableCell>
+                                    <div className="max-w-[500px] truncate" title={q.text}>
+                                        {q.text}
+                                    </div>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="outline">{q.category || '未分類'}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant="secondary">{q.question_type}</Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <Button variant="ghost" size="sm" asChild>
+                                        <Link href={`/admin/questions/${q.id}`}>
+                                            <Pencil className="h-4 w-4" />
+                                        </Link>
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                        {(!questions || questions.length === 0) && (
+                            <TableRow>
+                                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                                    問題が登録されていません
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
                 </Table>
-            </div> 
-            */}
+            </div>
         </div>
     );
 }
