@@ -34,11 +34,11 @@ export default async function AnalyticsPage() {
         const { data: attemptData, error: attemptError } = await supabase
             .from("learning_history")
             .select(`
-                id, score, is_passed, status, created_at, user_id,
+                id, score, is_passed, status, started_at, user_id,
                 profiles ( id, full_name, department_id )
             `)
             .eq("status", "completed")
-            .order("created_at", { ascending: false });
+            .order("started_at", { ascending: false });
 
         if (attemptError) throw new Error(`LearningHistory: ${attemptError.message}`);
         attempts = attemptData || [];
