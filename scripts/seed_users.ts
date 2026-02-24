@@ -63,6 +63,9 @@ const USERS = [
     { department: 'CS部', name: '山本莉唯', email: 'rio_yamamoto@gjb.co.jp', role: 'user' },
     { department: '不動産部', name: '前原涼帆', email: 'suzuho_maehara@gjb.co.jp', role: 'user' },
     { department: 'マーケティング部', name: '城島裕美', email: 'yumi_jojima@gjb.co.jp', role: 'user' },
+    { department: 'CS部', name: '春日 仁美', email: 'hitomi_kasuga@gjb.co.jp', role: 'user' },
+    { department: '店舗管理部', name: '吉原 哲', email: 'tetsu_yoshihara@gjb.co.jp', role: 'user' },
+    { department: '不動産部', name: '田村 優', email: 'masaru_tamura@gjb.co.jp', role: 'user' },
 ];
 
 const DEPARTMENTS = [

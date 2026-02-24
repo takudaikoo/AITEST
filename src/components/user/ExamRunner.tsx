@@ -27,7 +27,7 @@ interface ExamRunnerProps {
 
 export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamRunnerProps) {
     const router = useRouter();
-    const supabase = createClient();
+    const supabase = useRef(createClient()).current;
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<string, any>>({}); // question_id -> answer
     const [timeLeft, setTimeLeft] = useState<number | null>(timeLimit ? timeLimit * 60 : null);
@@ -108,130 +108,112 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
         }
     };
 
+    const isUUID = (str: string) => {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(str);
+    };
+
     const handleSubmit = async () => {
         if (isSubmitting) return;
         setIsSubmitting(true);
 
         try {
-            // 1. Calculate Score (Client-side estimation for immediate feedback, but secure scoring should be server-side/RPC)
-            // For this MVP, we calculate locally and save.
-
-            let totalScore = 0;
             let obtainedScore = 0;
-            const userAnswersPayload = [];
-            const incorrectQuestions = [];
+            const finalPayload: any[] = [];
+            const incorrectQuestions: string[] = [];
 
             for (const q of questions) {
                 const userAnswer = answers[q.id];
                 let isCorrect = false;
 
-                // Logic depends on type
+                // 1. Logic for Correctness
                 if (q.question_type === 'single_choice') {
                     const correctOption = q.options.find((o: any) => o.is_correct);
                     if (correctOption && userAnswer === correctOption.id) {
                         isCorrect = true;
                     }
                 } else if (q.question_type === 'multiple_choice') {
-                    // userAnswer is array of option_ids
                     const correctOptions = q.options.filter((o: any) => o.is_correct).map((o: any) => o.id);
                     const userSelected = Array.isArray(userAnswer) ? userAnswer : [];
-
-                    // Exact match check
                     if (correctOptions.length === userSelected.length &&
                         correctOptions.every((id: string) => userSelected.includes(id))) {
                         isCorrect = true;
                     }
-                } else {
-                    // Text - Use the AI result if available
+                } else if (q.question_type === 'text') {
                     const result = gradingResults[q.id];
                     if (result && result.isCorrect) {
                         isCorrect = true;
                     }
-                    // If not graded or false, it remains false.
                 }
 
-                if (isCorrect) obtainedScore += (100 / questions.length); // Simple equal weighting
-                if (!isCorrect) incorrectQuestions.push(q.id);
+                if (isCorrect) obtainedScore += (100 / questions.length);
+                else incorrectQuestions.push(q.id);
 
-                // Prep answer record
-                userAnswersPayload.push({
-                    history_id: historyId,
-                    question_id: q.id,
-                    selected_option_id: q.question_type === 'single_choice' ? userAnswer : null,
-                    // For multiple choice we might need multiple rows or a different schema structure. 
-                    // Current user_answers schema has single `selected_option_id`.
-                    // FIX: If multiple choice, we likely need to insert multiple rows OR change schema.
-                    // Let's handle Single Choice fully first. For Multiple, we'll serialize or insert multiple.
-                    // Schema correction: `user_answers` has `selected_option_id`.
-                    // If multiple choice, we need to insert multiple rows for the same question_id?
-                    // Yes, standard way.
-                    is_correct: isCorrect,
-                    text_answer: q.question_type === 'text' ? userAnswer : null
-                });
-            }
+                // 2. Prep Payload for DB (Only if IDs are UUIDs)
+                if (isUUID(historyId) && isUUID(q.id)) {
+                    if (q.question_type === 'multiple_choice' && Array.isArray(userAnswer)) {
+                        for (const optId of userAnswer) {
+                            if (isUUID(optId)) {
+                                finalPayload.push({
+                                    history_id: historyId,
+                                    question_id: q.id,
+                                    selected_option_id: optId,
+                                    is_correct: isCorrect // Overall question correctness
+                                });
+                            }
+                        }
+                    } else {
+                        // For non-UUID option ids (like CSV), selected_option_id will be null in DB
+                        const optId = (q.question_type === 'single_choice' && typeof userAnswer === 'string' && isUUID(userAnswer)) ? userAnswer : null;
 
-            // Handle Multiple Choice inserts properly
-            const finalPayload = [];
-            for (const q of questions) {
-                const ans = answers[q.id];
-                if (q.question_type === 'multiple_choice' && Array.isArray(ans)) {
-                    for (const optId of ans) {
-                        // We need to re-evaluate is_correct per option? No, usually is_correct is per question answer set.
-                        // Let's simplified: is_correct is false unless fully correct.
-                        // We will rely on history 'score' for the Pass/Fail.
                         finalPayload.push({
                             history_id: historyId,
                             question_id: q.id,
                             selected_option_id: optId,
-                            is_correct: false // Logic too complex for single row boolean without context
+                            text_answer: q.question_type === 'text' ? userAnswer : null,
+                            is_correct: isCorrect
                         });
                     }
-                } else {
-                    finalPayload.push({
-                        history_id: historyId,
-                        question_id: q.id,
-                        selected_option_id: q.question_type === 'single_choice' ? ans : null,
-                        text_answer: q.question_type === 'text' ? ans : null,
-                        is_correct: false // Need strict check
-                    });
                 }
             }
 
-            // Save Answers
-            const { error: ansError } = await supabase.from("user_answers").insert(finalPayload);
-            if (ansError) throw ansError;
+            // Save Answers (If any valid ones)
+            if (finalPayload.length > 0) {
+                const { error: ansError } = await supabase.from("user_answers").insert(finalPayload);
+                if (ansError) {
+                    console.error("Failed to insert user_answers:", ansError);
+                    // We continue anyway so history is updated, but log it
+                }
+            }
 
-            // Track Weaknesses (Upsert logic)
-            if (incorrectQuestions.length > 0) {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    for (const qId of incorrectQuestions) {
-                        try {
-                            const { data: existing } = await supabase
-                                .from('weaknesses')
-                                .select('failure_count')
-                                .eq('user_id', user.id)
-                                .eq('question_id', qId)
-                                .maybeSingle();
+            // Track Weaknesses
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user && incorrectQuestions.length > 0) {
+                for (const qId of incorrectQuestions) {
+                    if (!isUUID(qId)) continue;
+                    try {
+                        const { data: existing } = await supabase
+                            .from('weaknesses')
+                            .select('failure_count')
+                            .eq('user_id', user.id)
+                            .eq('question_id', qId)
+                            .maybeSingle();
 
-                            const newCount = (existing?.failure_count || 0) + 1;
-
-                            await supabase.from('weaknesses').upsert({
-                                user_id: user.id,
-                                question_id: qId,
-                                failure_count: newCount,
-                                last_failed_at: new Date().toISOString()
-                            });
-                        } catch (err) {
-                            console.error("Weakness update failed", err);
-                        }
+                        const newCount = (existing?.failure_count || 0) + 1;
+                        await supabase.from('weaknesses').upsert({
+                            user_id: user.id,
+                            question_id: qId,
+                            failure_count: newCount,
+                            last_failed_at: new Date().toISOString()
+                        });
+                    } catch (err) {
+                        console.error("Weakness update failed", err);
                     }
                 }
             }
 
-            // Update History via Server Action (handles XP and Rank)
-            const passed = obtainedScore >= 80; // Hardcoded or from program.passing_score
-
+            // Update History
+            const passed = Math.round(obtainedScore) >= 80;
             const result = await completeActivity(
                 historyId,
                 Math.round(obtainedScore),
@@ -240,13 +222,11 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
 
             if (!result.success) {
                 console.error(result.error);
-                toast.error("結果の保存に失敗しました");
+                toast.error("結果の保存に失敗しました: " + result.error);
             } else {
                 if (passed) {
                     if (result.isRankUp) {
-                        toast.success(`🎉 ランクアップ！ ${result.newRank} に昇格しました！ (+${result.xpGained} XP)`, {
-                            duration: 5000,
-                        });
+                        toast.success(`🎉 ランクアップ！ ${result.newRank} に昇格しました！ (+${result.xpGained} XP)`, { duration: 5000 });
                     } else if (result.xpGained > 0) {
                         toast.success(`👏 合格！ +${result.xpGained} XP 獲得しました！`);
                     } else {
@@ -257,12 +237,11 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                 }
             }
 
-            // Redirect to Result
             router.push(`/dashboard/history/${historyId}`);
 
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
-            alert("送信に失敗しました");
+            alert("送信に失敗しました: " + (e.message || "Unknown error"));
             setIsSubmitting(false);
         }
     };
@@ -307,20 +286,21 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                             value={answers[currentQuestion.id] || ""}
                             onValueChange={(val) => handleOptionSelect(currentQuestion.id, val)}
                         >
-                            {currentQuestion.options?.map((opt: any) => (
-                                <div
-                                    key={opt.id}
-                                    className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent"
-                                    onClick={(e) => {
-                                        // Prevent event from bubbling if clicking the radio itself to avoid conflict or redundancy
-                                        // But for Radio, distinct redundant clicks are fine.
-                                        handleOptionSelect(currentQuestion.id, opt.id)
-                                    }}
-                                >
-                                    <RadioGroupItem value={opt.id} id={opt.id} />
-                                    <Label htmlFor={opt.id} className="flex-1 cursor-pointer">{opt.text}</Label>
-                                </div>
-                            ))}
+                            {currentQuestion.options?.map((opt: any) => {
+                                const optionId = `${currentQuestion.id}-${opt.id}`;
+                                return (
+                                    <div
+                                        key={opt.id}
+                                        className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent has-[:checked]:bg-accent"
+                                        onClick={() => handleOptionSelect(currentQuestion.id, opt.id)}
+                                    >
+                                        <RadioGroupItem value={opt.id} id={optionId} />
+                                        <Label htmlFor={optionId} className="flex-1 cursor-pointer font-normal">
+                                            {opt.text}
+                                        </Label>
+                                    </div>
+                                );
+                            })}
                         </RadioGroup>
                     )}
 
@@ -367,36 +347,37 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                             {currentQuestion.options?.map((opt: any) => {
                                 const currentSelected = (answers[currentQuestion.id] || []) as string[];
                                 const isChecked = currentSelected.includes(opt.id);
+                                const optionId = `${currentQuestion.id}-${opt.id}`;
+
+                                const toggleSelection = () => {
+                                    if (isChecked) {
+                                        handleOptionSelect(currentQuestion.id, currentSelected.filter(id => id !== opt.id));
+                                    } else {
+                                        handleOptionSelect(currentQuestion.id, [...currentSelected, opt.id]);
+                                    }
+                                };
+
                                 return (
                                     <div
                                         key={opt.id}
-                                        className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent"
-                                        onClick={(e) => {
-                                            // Prevent double toggle if clicking the checkbox/label directly (since they handle their own events)
-                                            if ((e.target as HTMLElement).closest('button') || (e.target as HTMLElement).closest('label')) return;
-
-                                            // Toggle logic
-                                            if (isChecked) {
-                                                handleOptionSelect(currentQuestion.id, currentSelected.filter(id => id !== opt.id));
-                                            } else {
-                                                handleOptionSelect(currentQuestion.id, [...currentSelected, opt.id]);
-                                            }
-                                        }}
+                                        className="flex items-center space-x-2 border rounded p-4 cursor-pointer hover:bg-accent has-[:checked]:bg-accent"
+                                        onClick={toggleSelection}
                                     >
                                         <Checkbox
-                                            id={opt.id}
+                                            id={optionId}
                                             checked={isChecked}
-                                            onCheckedChange={(checked) => {
-                                                if (checked) {
-                                                    handleOptionSelect(currentQuestion.id, [...currentSelected, opt.id]);
-                                                } else {
-                                                    handleOptionSelect(currentQuestion.id, currentSelected.filter(id => id !== opt.id));
-                                                }
-                                            }}
+                                            onCheckedChange={toggleSelection}
+                                            onClick={(e) => e.stopPropagation()} // Prevent double trigger from div onClick
                                         />
-                                        <Label htmlFor={opt.id} className="flex-1 cursor-pointer pointer-events-none">{opt.text}</Label>
+                                        <Label
+                                            htmlFor={optionId}
+                                            className="flex-1 cursor-pointer font-normal"
+                                            onClick={(e) => e.stopPropagation()} // Prevent double trigger
+                                        >
+                                            {opt.text}
+                                        </Label>
                                     </div>
-                                )
+                                );
                             })}
                         </div>
                     )}
