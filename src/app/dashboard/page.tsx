@@ -223,6 +223,16 @@ export default function DashboardPage() {
         return acc;
     }, []);
 
+    // AI研修振り返りのテストを優先して先頭に表示する
+    filteredTests.sort((a, b) => {
+        const aIsAI = a.category === 'AI研修振り返り';
+        const bIsAI = b.category === 'AI研修振り返り';
+        if (aIsAI && !bIsAI) return -1;
+        if (!aIsAI && bIsAI) return 1;
+        // 両方同じならタイトルの昇順
+        return a.title.localeCompare(b.title);
+    });
+
 
     if (loading) {
         return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
