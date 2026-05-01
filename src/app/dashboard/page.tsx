@@ -223,13 +223,16 @@ export default function DashboardPage() {
         return acc;
     }, []);
 
-    // AI研修振り返りのテストを優先して先頭に表示する
+    // 新しい「第1回〜第6回」のテストを、「001.〜010.」よりも強制的に先頭に表示する
     filteredTests.sort((a, b) => {
-        const aIsAI = a.category === 'AI研修振り返り';
-        const bIsAI = b.category === 'AI研修振り返り';
-        if (aIsAI && !bIsAI) return -1;
-        if (!aIsAI && bIsAI) return 1;
-        // 両方同じならタイトルの昇順
+        // 「第」で始まるタイトルかどうかを判定
+        const aIsDai = a.title?.startsWith('第');
+        const bIsDai = b.title?.startsWith('第');
+        
+        if (aIsDai && !bIsDai) return -1; // aを上へ
+        if (!aIsDai && bIsDai) return 1;  // bを上へ
+        
+        // 両方「第」で始まる、または両方始まらない場合は通常のタイトル昇順（辞書順）
         return a.title.localeCompare(b.title);
     });
 
