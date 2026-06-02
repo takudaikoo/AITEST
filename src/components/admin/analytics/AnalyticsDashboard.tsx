@@ -24,8 +24,9 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { BarChart, Users, Trophy, AlertTriangle, Filter, X } from "lucide-react";
+import { BarChart, Users, Trophy, AlertTriangle, Filter, X, CheckCircle2, XCircle } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 interface AnalyticsDashboardProps {
     departments: { id: string; name: string }[];
@@ -126,6 +127,33 @@ export function AnalyticsDashboard({ departments, attempts, users, worstQuestion
         return users.filter(u => u.department_id === selectedDeptId);
     }, [users, selectedDeptId]);
 
+    // 部署選択時: 部署内の個人別ステータスを集計
+    const userStats = useMemo(() => {
+        if (selectedDeptId === "all") return [];
+
+        return filteredUsers.map(u => {
+            const uAttempts = attempts.filter(a => a.user_id === u.id);
+            const total = uAttempts.length;
+            const passed = uAttempts.filter(a => a.is_passed).length;
+            const scores = uAttempts.map(a => a.score ?? 0);
+            const avg = total > 0 ? Math.round(scores.reduce((s, v) => s + v, 0) / total) : null;
+            const passRate = total > 0 ? Math.round((passed / total) * 100) : null;
+
+            return {
+                id: u.id,
+                name: u.full_name || "—",
+                total,
+                passed,
+                passRate,
+                avg,
+            };
+        }).sort((a, b) => {
+            // 受講数が多い順 → 同じなら合格率降順
+            if (b.total !== a.total) return b.total - a.total;
+            return (b.passRate ?? -1) - (a.passRate ?? -1);
+        });
+    }, [selectedDeptId, filteredUsers, attempts]);
+
     const handleDeptChange = (val: string) => {
         setSelectedDeptId(val);
         setSelectedUserId("all"); // Reset user when dept changes
@@ -203,25 +231,87 @@ export function AnalyticsDashboard({ departments, attempts, users, worstQuestion
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
-                {/* Department Ranking / Stats */}
+                {/* Department Ranking / 個人ステータス */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>{selectedDeptId !== "all" ? "部署ステータス" : "部署別パフォーマンス"}</CardTitle>
-                        <CardDescription>合格率 (受験数)</CardDescription>
+                        <CardTitle>
+                            {selectedDeptId !== "all"
+                                ? `${departments.find(d => d.id === selectedDeptId)?.name ?? ""} — メンバー別ステータス`
+                                : "部署別パフォーマンス"}
+                        </CardTitle>
+                        <CardDescription>
+                            {selectedDeptId !== "all" ? "合格率・受講数・平均点（部署内個人）" : "合格率 (受験数)"}
+                        </CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
-                            {deptRanking.map(dept => (
-                                <div key={dept.name} className="space-y-1">
-                                    <div className="flex items-center justify-between text-sm">
-                                        <span className="font-medium">{dept.name}</span>
-                                        <span className="text-muted-foreground">{dept.passRate}% ({dept.total})</span>
+                        {/* 全部署表示: バー */}
+                        {selectedDeptId === "all" && (
+                            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2">
+                                {deptRanking.map(dept => (
+                                    <div key={dept.name} className="space-y-1">
+                                        <div className="flex items-center justify-between text-sm">
+                                            <span className="font-medium">{dept.name}</span>
+                                            <span className="text-muted-foreground">{dept.passRate}% ({dept.total})</span>
+                                        </div>
+                                        <Progress value={dept.passRate} className="h-2" />
                                     </div>
-                                    <Progress value={dept.passRate} className="h-2" />
-                                </div>
-                            ))}
-                            {deptRanking.length === 0 && <div className="text-muted-foreground text-sm">データがありません</div>}
-                        </div>
+                                ))}
+                                {deptRanking.length === 0 && <div className="text-muted-foreground text-sm">データがありません</div>}
+                            </div>
+                        )}
+
+                        {/* 部署選択時: 個人別テーブル */}
+                        {selectedDeptId !== "all" && (
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-sm">
+                                    <thead>
+                                        <tr className="border-b">
+                                            <th className="pb-2 text-left font-medium text-muted-foreground">氏名</th>
+                                            <th className="pb-2 text-center font-medium text-muted-foreground">受講数</th>
+                                            <th className="pb-2 text-center font-medium text-muted-foreground">合格率</th>
+                                            <th className="pb-2 text-center font-medium text-muted-foreground">平均点</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {userStats.map(u => (
+                                            <tr key={u.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors">
+                                                <td className="py-2.5 font-medium">{u.name}</td>
+                                                <td className="py-2.5 text-center">
+                                                    {u.total > 0
+                                                        ? <span className="font-bold">{u.total} 回</span>
+                                                        : <span className="text-muted-foreground text-xs">未受験</span>
+                                                    }
+                                                </td>
+                                                <td className="py-2.5 text-center">
+                                                    {u.passRate !== null ? (
+                                                        <div className="flex flex-col items-center gap-0.5">
+                                                            <span className={`font-bold ${u.passRate >= 80 ? "text-green-600" : u.passRate >= 50 ? "text-amber-600" : "text-red-500"}`}>
+                                                                {u.passRate}%
+                                                            </span>
+                                                            <span className="text-xs text-muted-foreground">({u.passed}/{u.total})</span>
+                                                        </div>
+                                                    ) : <span className="text-muted-foreground">—</span>}
+                                                </td>
+                                                <td className="py-2.5 text-center">
+                                                    {u.avg !== null ? (
+                                                        <span className={`font-bold ${u.avg >= 80 ? "text-green-600" : u.avg >= 60 ? "text-amber-600" : "text-red-500"}`}>
+                                                            {u.avg} 点
+                                                        </span>
+                                                    ) : <span className="text-muted-foreground">—</span>}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {userStats.length === 0 && (
+                                            <tr>
+                                                <td colSpan={4} className="py-8 text-center text-muted-foreground text-sm">
+                                                    該当するユーザーがいません
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
                     </CardContent>
                 </Card>
 
