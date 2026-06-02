@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, BookOpen, Clock, Trophy, Loader2, AlertCircle, CheckCircle2, Lock } from "lucide-react";
+import { ArrowRight, BookOpen, Clock, Trophy, Loader2, AlertCircle, CheckCircle2, Lock, ClipboardList } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { calculateLevel, getLevelProgress } from "@/lib/level-utils";
@@ -29,6 +29,7 @@ export default function DashboardPage() {
     const [tests, setTests] = useState<any[]>([]);
     const [completedIds, setCompletedIds] = useState<Set<string>>(new Set());
     const [loading, setLoading] = useState(true);
+    const [kakuninTest, setKakuninTest] = useState<any>(null);
 
     // Filters
     const [lectureCategory, setLectureCategory] = useState<string>('all');
@@ -94,6 +95,16 @@ export default function DashboardPage() {
                 .order('title', { ascending: true }); // Ascending order requested
 
             if (allPrograms) {
+                // 確認テストを別扱い
+                const kakunin = allPrograms.find(p => p.category === '確認テスト');
+                if (kakunin) {
+                    setKakuninTest({
+                        ...kakunin,
+                        isCompleted: compIds.has(kakunin.id),
+                        historyId: completedHistory.find(h => getProgramId(h) === kakunin.id)?.id
+                    });
+                }
+
                 const lecs = allPrograms.filter(p => p.type === 'lecture');
                 const tsts = allPrograms.filter(p => p.type === 'test' || p.type === 'exam');
 
@@ -280,6 +291,47 @@ export default function DashboardPage() {
 
     return (
         <div className="space-y-8 pb-12">
+            {/* 確認テスト バナー */}
+            {kakuninTest && (
+                <div className={`rounded-xl border-2 p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4 ${
+                    kakuninTest.isCompleted
+                        ? 'border-green-400/50 bg-green-500/5'
+                        : 'border-amber-400 bg-amber-50/50 dark:bg-amber-900/10 shadow-[0_0_20px_rgba(251,191,36,0.15)]'
+                }`}>
+                    <div className={`p-3 rounded-lg shrink-0 ${kakuninTest.isCompleted ? 'bg-green-500/10' : 'bg-amber-400/20'}`}>
+                        <ClipboardList className={`h-6 w-6 ${kakuninTest.isCompleted ? 'text-green-600' : 'text-amber-600 dark:text-amber-400'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                                kakuninTest.isCompleted
+                                    ? 'bg-green-500/15 text-green-700 dark:text-green-400'
+                                    : 'bg-amber-400/30 text-amber-800 dark:text-amber-300'
+                            }`}>
+                                {kakuninTest.isCompleted ? '受験済み' : '全員必須'}
+                            </span>
+                            <h3 className="font-bold text-base">{kakuninTest.title}</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{kakuninTest.description}</p>
+                        <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> 目安40分 / 全30問</span>
+                            <span className="flex items-center gap-1 text-yellow-600/80"><Trophy className="h-3 w-3" /> {kakuninTest.xp_reward} XP</span>
+                        </div>
+                    </div>
+                    <Button
+                        size="sm"
+                        className={`shrink-0 ${kakuninTest.isCompleted ? '' : 'bg-amber-500 hover:bg-amber-600 text-white dark:bg-amber-600 dark:hover:bg-amber-700'}`}
+                        variant={kakuninTest.isCompleted ? 'outline' : 'default'}
+                        asChild
+                    >
+                        <Link href={`/dashboard/programs/${kakuninTest.id}${kakuninTest.isCompleted && kakuninTest.historyId ? '/result/' + kakuninTest.historyId : ''}`}>
+                            {kakuninTest.isCompleted ? '結果を見る' : '今すぐ受験する'}
+                            <ArrowRight className="h-4 w-4 ml-1" />
+                        </Link>
+                    </Button>
+                </div>
+            )}
+
             {/* Header / Stats */}
             <section className="space-y-4">
                 <h2 className="text-2xl font-bold tracking-tight">ダッシュボード</h2>
