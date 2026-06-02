@@ -380,7 +380,7 @@ export function AnalyticsDashboard({ departments, attempts, users, worstQuestion
 
                                 return (
                                     <TableRow key={i}>
-                                        <TableCell>{new Date(a.created_at || Date.now()).toLocaleDateString()}</TableCell>
+                                        <TableCell>{a.started_at ? new Date(a.started_at).toLocaleDateString('ja-JP') : '—'}</TableCell>
                                         <TableCell>{userName}</TableCell>
                                         <TableCell>{a.score}点</TableCell>
                                         <TableCell>

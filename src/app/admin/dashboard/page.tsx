@@ -107,15 +107,15 @@ export default async function AdminDashboard() {
     const startDate = subDays(today, 6);
     const { data: recentLogs } = await supabase
         .from('learning_history')
-        .select('created_at')
-        .gte('created_at', startDate.toISOString())
-        .order('created_at', { ascending: true });
+        .select('started_at')
+        .gte('started_at', startDate.toISOString())
+        .order('started_at', { ascending: true });
 
     const chartData = [];
     for (let i = 0; i < 7; i++) {
         const date = subDays(today, 6 - i);
         const dateStr = format(date, 'MM/dd', { locale: ja });
-        const count = recentLogs?.filter(log => isSameDay(new Date(log.created_at), date)).length || 0;
+        const count = recentLogs?.filter(log => isSameDay(new Date(log.started_at), date)).length || 0;
         chartData.push({ name: dateStr, total: count });
     }
 
