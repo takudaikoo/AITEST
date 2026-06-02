@@ -12,6 +12,7 @@ import {
     LogOut,
     BrainCircuit,
     BookOpen,
+    ClipboardList,
 } from "lucide-react";
 
 const navItems = [
@@ -21,6 +22,7 @@ const navItems = [
     { href: "/admin/questions", label: "問題管理 (DB)", icon: FileQuestion },
     { href: "/admin/users", label: "ユーザー管理", icon: Users },
     { href: "/admin/analytics", label: "成績分析", icon: BarChart3 },
+    { href: "/admin/kakunin-test", label: "確認テスト管理", icon: ClipboardList },
     { href: "/admin/settings", label: "設定", icon: Settings },
 ];
 
