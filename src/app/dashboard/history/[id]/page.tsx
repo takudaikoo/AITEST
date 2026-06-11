@@ -25,7 +25,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
       programs ( title, passing_score, type ),
       user_answers (
         question_id, is_correct, selected_option_id, text_answer,
-        questions ( text, explanation, options (id, text, is_correct) )
+        questions ( text, question_type, explanation, options (id, text, is_correct) )
       )
     `)
         .eq("id", params.id)
@@ -78,15 +78,23 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
             <div className="space-y-6">
                 <h3 className="text-xl font-semibold">回答の振り返り</h3>
                 {(() => {
+                    if (!history.user_answers || history.user_answers.length === 0) {
+                        return (
+                            <div className="text-center py-12 text-muted-foreground text-sm border-2 border-dashed rounded-lg">
+                                回答の詳細履歴がありません
+                            </div>
+                        );
+                    }
+
                     // Deduplicate questions to handle multiple usage rows for multiple choice
                     const questionMap = new Map();
-                    history.user_answers?.forEach((ans: any) => {
+                    history.user_answers.forEach((ans: any) => {
                         if (!questionMap.has(ans.question_id)) {
                             questionMap.set(ans.question_id, {
                                 question: ans.questions,
                                 selectedOptionIds: [],
                                 textAnswer: ans.text_answer,
-                                isCorrect: ans.is_correct // Logic might need refinement for multiple choice partials if partials existed, but here we assume uniformity
+                                isCorrect: ans.is_correct
                             });
                         }
                         const entry = questionMap.get(ans.question_id);
@@ -98,11 +106,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
                     return Array.from(questionMap.values()).map((item: any, index: number) => {
                         const { question, selectedOptionIds, textAnswer, isCorrect } = item;
 
-                        // For multiple choice, we need to check if ALL selected matches ALL correct?
-                        // The saved `is_correct` in DB is per row. If one row is false, the question is likely false.
-                        // However, let's rely on the first row's `is_correct` or re-evaluate. 
-                        // In ExamRunner, we set is_correct=false for simplified rows in multiple choice, so likely it shows as incorrect.
-                        // Let's rely on the flag for now.
+                        if (!question) return null;
 
                         // Resolve User Answer Text
                         let userAnswerDisplay = "未回答";
@@ -112,7 +116,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
                             userAnswerDisplay = question.options
                                 ?.filter((o: any) => selectedOptionIds.includes(o.id))
                                 .map((o: any) => o.text)
-                                .join(", ");
+                                .join(", ") || "未回答";
                         }
 
                         return (
@@ -129,19 +133,23 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
                                     <div className="grid md:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <span className="text-sm font-medium text-muted-foreground">あなたの回答</span>
-                                            <div className="p-3 rounded-md border bg-background">
+                                            <div className="p-3 rounded-md border bg-background text-sm whitespace-pre-wrap">
                                                 {userAnswerDisplay}
                                             </div>
                                         </div>
                                         <div className="space-y-2">
-                                            <span className="text-sm font-medium text-muted-foreground">正解</span>
-                                            <div className="p-3 rounded-md border bg-muted/50">
-                                                {question.options?.filter((o: any) => o.is_correct).map((o: any) => o.text).join(", ")}
+                                            <span className="text-sm font-medium text-muted-foreground">
+                                                {question.question_type === 'text' ? '参考解答' : '正解'}
+                                            </span>
+                                            <div className="p-3 rounded-md border bg-muted/50 text-sm">
+                                                {question.question_type === 'text'
+                                                    ? (question.explanation || '解説参照')
+                                                    : question.options?.filter((o: any) => o.is_correct).map((o: any) => o.text).join(", ")}
                                             </div>
                                         </div>
                                     </div>
 
-                                    {question.explanation && (
+                                    {question.question_type !== 'text' && question.explanation && (
                                         <div className="mt-4 rounded-md bg-blue-50/10 p-4 text-sm">
                                             <span className="font-semibold block mb-1">解説:</span>
                                             {question.explanation}
@@ -150,7 +158,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
                                 </CardContent>
                             </Card>
                         );
-                    });
+                    }).filter(Boolean);
                 })()}
             </div>
         </div>

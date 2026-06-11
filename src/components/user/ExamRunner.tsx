@@ -118,6 +118,36 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
         setIsSubmitting(true);
 
         try {
+            // Auto-grade any text questions that have an answer but weren't manually graded
+            const localGradingResults = { ...gradingResults };
+            const ungradedTextQs = questions.filter(
+                q => q.question_type === 'text' && answers[q.id] && !localGradingResults[q.id]
+            );
+
+            for (const q of ungradedTextQs) {
+                try {
+                    const res = await fetch("/api/grade", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            questionText: q.text,
+                            userAnswer: answers[q.id],
+                            gradingPrompt: q.grading_prompt,
+                            explanation: q.explanation
+                        })
+                    });
+                    if (res.ok) {
+                        localGradingResults[q.id] = await res.json();
+                    }
+                } catch (e) {
+                    console.error("Auto-grading failed for question", q.id);
+                }
+            }
+
+            if (ungradedTextQs.length > 0) {
+                setGradingResults(localGradingResults);
+            }
+
             let obtainedScore = 0;
             const finalPayload: any[] = [];
             const incorrectQuestions: string[] = [];
@@ -140,7 +170,7 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                         isCorrect = true;
                     }
                 } else if (q.question_type === 'text') {
-                    const result = gradingResults[q.id];
+                    const result = localGradingResults[q.id];
                     if (result && result.isCorrect) {
                         isCorrect = true;
                     }
@@ -313,7 +343,7 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                                 onChange={(e) => handleOptionSelect(currentQuestion.id, e.target.value)}
                             />
 
-                            <div className="flex justify-end">
+                            <div className="flex flex-col items-end gap-1">
                                 <Button
                                     onClick={handleAIGrading}
                                     disabled={isGrading || !answers[currentQuestion.id]}
@@ -321,8 +351,11 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                                     className="gap-2"
                                 >
                                     {isGrading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4 text-yellow-500" />}
-                                    AI採点実行
+                                    {isGrading ? "採点中..." : "AI採点実行"}
                                 </Button>
+                                <p className="text-xs text-muted-foreground">
+                                    ※ 未採点のまま終了すると自動採点されます
+                                </p>
                             </div>
 
                             {gradingResults[currentQuestion.id] && (

@@ -97,22 +97,106 @@ export default async function PlayPage({ params }: PlayPageProps) {
     })) || [];
 
     if (questionsForRunner.length === 0 && program.quiz_csv) {
-        const { parseAndValidateQuestions } = await import("@/lib/csv-import");
-        const parsed = await parseAndValidateQuestions(program.quiz_csv);
+        // Auto-import CSV questions into DB so answers can be saved with proper UUIDs
+        try {
+            const { createServiceClient } = await import("@/lib/supabase/service");
+            const serviceSupabase = createServiceClient();
+            const { parseAndValidateQuestions } = await import("@/lib/csv-import");
+            const parsed = await parseAndValidateQuestions(program.quiz_csv);
 
-        if (parsed.errors.length === 0) {
-            questionsForRunner = parsed.data.map((q, idx) => ({
-                id: `csv-${idx}-${Date.now()}`, // Temporary ID
-                text: q.content,
-                question_type: q.question_type,
-                explanation: q.explanation,
-                grading_prompt: "", // Not in CSV for now
-                options: q.options.map((optText, optIdx) => ({
-                    id: (optIdx + 1).toString(),
-                    text: optText,
-                    is_correct: q.correct_indices.includes(optIdx + 1)
-                }))
-            }));
+            if (parsed.errors.length === 0) {
+                // Check if already imported (e.g., by a concurrent request)
+                const { count: existingCount } = await serviceSupabase
+                    .from('program_questions')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('program_id', program.id);
+
+                if ((existingCount || 0) === 0) {
+                    // Batch insert questions
+                    const { data: insertedQs, error: qErr } = await serviceSupabase
+                        .from('questions')
+                        .insert(parsed.data.map(q => ({
+                            text: q.content,
+                            question_type: q.question_type,
+                            explanation: q.explanation || null,
+                            grading_prompt: null,
+                            difficulty: q.difficulty || 1,
+                            points: q.points || 10,
+                            tags: q.tags?.length ? q.tags : null,
+                            category: q.category || null
+                        })))
+                        .select('id');
+
+                    if (!qErr && insertedQs && insertedQs.length === parsed.data.length) {
+                        // Insert options for choice questions
+                        const optionPayload = insertedQs.flatMap((q, i) =>
+                            parsed.data[i].options.map((optText, optIdx) => ({
+                                question_id: q.id,
+                                text: optText,
+                                is_correct: parsed.data[i].correct_indices.includes(optIdx + 1)
+                            }))
+                        );
+                        if (optionPayload.length > 0) {
+                            await serviceSupabase.from('options').insert(optionPayload);
+                        }
+
+                        // Insert program_questions links
+                        await serviceSupabase.from('program_questions').insert(
+                            insertedQs.map((q, i) => ({
+                                program_id: program.id,
+                                question_id: q.id,
+                                question_number: i + 1
+                            }))
+                        );
+                    }
+                }
+
+                // Re-fetch from DB (works whether we just imported or a concurrent import happened)
+                const { data: freshPQ } = await serviceSupabase
+                    .from('program_questions')
+                    .select(`
+                        question_number,
+                        questions (
+                            id, text, question_type, grading_prompt, explanation,
+                            options (id, text, is_correct)
+                        )
+                    `)
+                    .eq('program_id', program.id)
+                    .order('question_number', { ascending: true });
+
+                if (freshPQ && freshPQ.length > 0) {
+                    questionsForRunner = freshPQ.map((pq: any) => ({
+                        ...pq.questions,
+                        options: (pq.questions.options || []).map((o: any) => ({
+                            id: o.id,
+                            text: o.text,
+                            is_correct: o.is_correct
+                        }))
+                    }));
+                }
+            }
+        } catch (importError) {
+            console.error("Auto-import failed, falling back to CSV:", importError);
+        }
+
+        // CSV fallback if auto-import failed or SERVICE_ROLE_KEY is unavailable
+        if (questionsForRunner.length === 0) {
+            const { parseAndValidateQuestions } = await import("@/lib/csv-import");
+            const parsed = await parseAndValidateQuestions(program.quiz_csv);
+            if (parsed.errors.length === 0) {
+                questionsForRunner = parsed.data.map((q, idx) => ({
+                    id: `csv-${idx}-${Date.now()}`,
+                    text: q.content,
+                    question_type: q.question_type,
+                    explanation: q.explanation,
+                    grading_prompt: "",
+                    options: q.options.map((optText, optIdx) => ({
+                        id: (optIdx + 1).toString(),
+                        text: optText,
+                        is_correct: q.correct_indices.includes(optIdx + 1)
+                    }))
+                }));
+            }
         }
     }
 

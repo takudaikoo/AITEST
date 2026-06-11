@@ -337,7 +337,7 @@ export default function DashboardPage() {
                         variant={kakuninTest.isCompleted ? 'outline' : 'default'}
                         asChild
                     >
-                        <Link href={`/dashboard/programs/${kakuninTest.id}${kakuninTest.isCompleted && kakuninTest.historyId ? '/result/' + kakuninTest.historyId : ''}`}>
+                        <Link href={kakuninTest.isCompleted && kakuninTest.historyId ? `/dashboard/history/${kakuninTest.historyId}` : `/dashboard/programs/${kakuninTest.id}`}>
                             {kakuninTest.isCompleted ? '結果を見る' : '今すぐ受験する'}
                             <ArrowRight className="h-4 w-4 ml-1" />
                         </Link>
