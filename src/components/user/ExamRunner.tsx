@@ -125,22 +125,39 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
             );
 
             for (const q of ungradedTextQs) {
-                try {
-                    const res = await fetch("/api/grade", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                            questionText: q.text,
-                            userAnswer: answers[q.id],
-                            gradingPrompt: q.grading_prompt,
-                            explanation: q.explanation
-                        })
-                    });
-                    if (res.ok) {
-                        localGradingResults[q.id] = await res.json();
+                let graded = false;
+                for (let attempt = 0; attempt < 2; attempt++) {
+                    try {
+                        const res = await fetch("/api/grade", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                questionText: q.text,
+                                userAnswer: answers[q.id],
+                                gradingPrompt: q.grading_prompt,
+                                explanation: q.explanation
+                            })
+                        });
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (typeof data.isCorrect === 'boolean') {
+                                localGradingResults[q.id] = data;
+                                graded = true;
+                                break;
+                            }
+                        }
+                    } catch (e) {
+                        console.error("Auto-grading attempt", attempt + 1, "failed for question", q.id);
                     }
-                } catch (e) {
-                    console.error("Auto-grading failed for question", q.id);
+                }
+                // AI採点がシステム障害で失敗した場合は回答済みとして正解扱いにする
+                if (!graded) {
+                    console.warn("Auto-grading unavailable for question", q.id, "- defaulting to correct");
+                    localGradingResults[q.id] = {
+                        isCorrect: true,
+                        score: 10,
+                        feedback: "採点システムに一時的な問題が発生したため、回答済みとして正解扱いとします。"
+                    };
                 }
             }
 

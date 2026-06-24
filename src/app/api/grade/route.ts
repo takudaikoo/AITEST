@@ -54,10 +54,14 @@ ${userAnswer}
         const response = await result.response;
         const text = response.text();
 
-        // simple cleaning in case markdown is included
-        const cleanedText = text.replace(/```json/g, "").replace(/```/g, "").trim();
+        // Extract JSON object even if wrapped in markdown or extra text
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            console.error("AI Grading: no JSON found in response:", text);
+            return NextResponse.json({ error: "No JSON in response" }, { status: 500 });
+        }
 
-        const jsonResponse = JSON.parse(cleanedText);
+        const jsonResponse = JSON.parse(jsonMatch[0]);
 
         return NextResponse.json(jsonResponse);
 

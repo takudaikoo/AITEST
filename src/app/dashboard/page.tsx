@@ -292,7 +292,7 @@ export default function DashboardPage() {
                         asChild={!isLevelLocked}
                     >
                         {isLevelLocked ? 'ロック中' : (
-                            <Link href={`/dashboard/programs/${program.id}${isCompleted && program.type !== 'lecture' ? '/result/' + program.historyId : ''}`}>
+                            <Link href={isCompleted && program.type !== 'lecture' && program.historyId ? `/dashboard/history/${program.historyId}` : `/dashboard/programs/${program.id}`}>
                                 {isCompleted ? '復習する' : '開始する'}
                             </Link>
                         )}
