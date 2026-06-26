@@ -38,7 +38,13 @@ BEGIN
   END IF;
 
   -- questions.review_program_id -> programs.id
-  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'questions_review_program_id_fkey') THEN
+  -- ※ review_program_id カラムが存在する場合のみ追加（再作成時に欠落しているDBがある）
+  IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'questions'
+          AND column_name = 'review_program_id'
+     )
+     AND NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'questions_review_program_id_fkey') THEN
     ALTER TABLE public.questions
       ADD CONSTRAINT questions_review_program_id_fkey
       FOREIGN KEY (review_program_id) REFERENCES public.programs(id) NOT VALID;
