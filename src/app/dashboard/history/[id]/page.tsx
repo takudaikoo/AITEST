@@ -18,20 +18,34 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
 
     if (!user) redirect("/login");
 
+    // 1. 履歴本体（+プログラム情報）を取得。ここが無ければ本当に存在しないので404。
     const { data: history } = await supabase
         .from("learning_history")
         .select(`
       *,
-      programs ( title, passing_score, type ),
-      user_answers (
-        question_id, is_correct, selected_option_id, text_answer,
-        questions ( text, question_type, explanation, options (id, text, is_correct) )
-      )
+      programs ( title, passing_score, type )
     `)
         .eq("id", params.id)
         .single();
 
     if (!history) return notFound();
+
+    // 2. 回答詳細は別クエリで取得。user_answers が一時的に取得できなくても
+    //    結果画面（点数・合否）は表示できるようにし、404にしない。
+    let userAnswers: any[] = [];
+    const { data: answers, error: answersError } = await supabase
+        .from("user_answers")
+        .select(`
+      question_id, is_correct, selected_option_id, text_answer,
+      questions ( text, question_type, explanation, options (id, text, is_correct) )
+    `)
+        .eq("history_id", params.id);
+
+    if (answersError) {
+        console.error("Failed to load user_answers:", answersError.message);
+    } else if (answers) {
+        userAnswers = answers;
+    }
 
     // Calculate specific analytics if needed
     const passingScore = history.programs?.passing_score || 80;
@@ -78,7 +92,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
             <div className="space-y-6">
                 <h3 className="text-xl font-semibold">回答の振り返り</h3>
                 {(() => {
-                    if (!history.user_answers || history.user_answers.length === 0) {
+                    if (!userAnswers || userAnswers.length === 0) {
                         return (
                             <div className="text-center py-12 text-muted-foreground text-sm border-2 border-dashed rounded-lg">
                                 回答の詳細履歴がありません
@@ -88,7 +102,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
 
                     // Deduplicate questions to handle multiple usage rows for multiple choice
                     const questionMap = new Map();
-                    history.user_answers.forEach((ans: any) => {
+                    userAnswers.forEach((ans: any) => {
                         if (!questionMap.has(ans.question_id)) {
                             questionMap.set(ans.question_id, {
                                 question: ans.questions,
