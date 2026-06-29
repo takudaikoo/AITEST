@@ -3,6 +3,13 @@ import { KakuninTestDashboard } from "@/components/admin/KakuninTestDashboard";
 
 export const dynamic = "force-dynamic";
 
+// 確認テストの対象外ユーザー（メールアドレスで指定）
+const EXCLUDED_EMAILS = [
+    "smagol.ryosuke.nishikawa@gmail.com", // 西川良輔
+    "yuto_takasuka@gjb.co.jp",            // 高須賀優人
+    "naoto_takasuka@gjb.co.jp",           // 高須賀直人
+];
+
 export default async function KakuninTestPage() {
     const supabase = createServiceClient();
 
@@ -13,10 +20,11 @@ export default async function KakuninTestPage() {
         .eq("category", "確認テスト")
         .single();
 
-    // 全ユーザー（部署付き）を取得
+    // 全ユーザー（部署付き）を取得（対象外ユーザーを除く）
     const { data: users } = await supabase
         .from("profiles")
         .select("id, full_name, department_id, departments(name)")
+        .not("email", "in", `(${EXCLUDED_EMAILS.map((e) => `"${e}"`).join(",")})`)
         .order("full_name");
 
     // 部署一覧
