@@ -210,7 +210,7 @@ export default async function PlayPage({ params }: PlayPageProps) {
                     programId={program.id}
                     title={program.title}
                     content={program.content_body || ""}
-                    quizCsv={program.quiz_csv}
+                    questions={questionsForRunner}
                 />
             </div>
         );

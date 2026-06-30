@@ -3,15 +3,14 @@
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
-import { CheckCircle2, AlertCircle, RefreshCcw } from "lucide-react";
+import { CheckCircle2, AlertCircle } from "lucide-react";
 import { completeActivity } from "@/app/actions/gamification";
 import { toast } from "sonner";
-import { parseAndValidateQuestions, CsvQuestionInput } from "@/lib/csv-import";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -19,116 +18,141 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 
+interface QuizOption {
+    id: string;
+    text: string;
+    is_correct?: boolean;
+}
+
+interface QuizQuestion {
+    id: string;
+    text: string;
+    question_type: string;
+    explanation?: string | null;
+    options: QuizOption[];
+}
+
 interface LectureViewerProps {
     historyId: string;
     programId: string;
     title: string;
     content: string;
     videoUrl?: string; // Optional
-    quizCsv?: string | null;
+    questions?: QuizQuestion[];
 }
 
-export function LectureViewer({ historyId, programId, title, content, videoUrl, quizCsv }: LectureViewerProps) {
+const isUUID = (str: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
+
+// 1問の正誤判定（答え合わせ表示と回答保存の両方で使用）
+function computeIsCorrect(q: QuizQuestion, answer: any): boolean {
+    if (q.question_type === 'single_choice') {
+        const correct = q.options.find(o => o.is_correct);
+        return !!correct && answer === correct.id;
+    }
+    if (q.question_type === 'multiple_choice') {
+        const correctIds = q.options.filter(o => o.is_correct).map(o => o.id).sort();
+        const selected = (Array.isArray(answer) ? [...answer] : []).sort();
+        return correctIds.length > 0
+            && correctIds.length === selected.length
+            && correctIds.every((id, i) => id === selected[i]);
+    }
+    if (q.question_type === 'text') {
+        return typeof answer === 'string' && answer.trim().length > 0;
+    }
+    return false;
+}
+
+export function LectureViewer({ historyId, title, content, videoUrl, questions = [] }: LectureViewerProps) {
     const router = useRouter();
     const supabase = createClient();
     const [isCompleting, setIsCompleting] = useState(false);
 
-    // Quiz State
-    const [questions, setQuestions] = useState<CsvQuestionInput[]>([]);
-    const [userAnswers, setUserAnswers] = useState<Record<number, any>>({}); // index -> answer
-    const [quizStatus, setQuizStatus] = useState<'idle' | 'submitted' | 'passed' | 'failed'>('idle');
+    // Quiz State (question_id -> answer)
+    const [answers, setAnswers] = useState<Record<string, any>>({});
+    const [quizStatus, setQuizStatus] = useState<'idle' | 'passed' | 'failed'>('idle');
     const [score, setScore] = useState({ correct: 0, total: 0 });
 
-    useEffect(() => {
-        if (quizCsv) {
-            parseAndValidateQuestions(quizCsv).then(result => {
-                if (result.errors.length === 0) {
-                    setQuestions(result.data);
-                } else {
-                    console.error("Quiz Parse Error", result.errors);
-                }
-            });
-        }
-    }, [quizCsv]);
+    const hasQuiz = questions.length > 0;
 
-    const handleAnswerChange = (questionIndex: number, value: any) => {
-        setUserAnswers(prev => ({
-            ...prev,
-            [questionIndex]: value
-        }));
-        // Reset status on change if we want re-submission
-        if (quizStatus === 'submitted' || quizStatus === 'failed') {
-            setQuizStatus('idle');
-        }
+    const setAnswer = (qId: string, value: any) => {
+        setAnswers(prev => ({ ...prev, [qId]: value }));
+        // 回答変更時は再提出できるよう判定をリセット
+        if (quizStatus !== 'idle') setQuizStatus('idle');
     };
 
-    const handleCheckboxChange = (questionIndex: number, optionIndex: number, checked: boolean) => {
-        const current = userAnswers[questionIndex] as number[] || [];
-        let next;
-        if (checked) {
-            next = [...current, optionIndex];
-        } else {
-            next = current.filter(i => i !== optionIndex);
-        }
-        handleAnswerChange(questionIndex, next);
+    const toggleMulti = (qId: string, optId: string, checked: boolean) => {
+        const current = (answers[qId] as string[]) || [];
+        const next = checked ? [...current, optId] : current.filter(i => i !== optId);
+        setAnswer(qId, next);
     };
+
+    const allAnswered = questions.every(q => {
+        const a = answers[q.id];
+        if (Array.isArray(a)) return a.length > 0;
+        return a !== undefined && a !== null && String(a).trim() !== '';
+    });
 
     const checkAnswers = () => {
         let correctCount = 0;
-        let isAllCorrect = true;
-
-        questions.forEach((q, idx) => {
-            const answer = userAnswers[idx];
-            let isCorrect = false;
-
-            if (q.question_type === 'single_choice') {
-                // answer is index (1-based from CSV?) no options are 0-indexed in array, but correct_indices in CSV is 1-based.
-                // My parser converts 1-based csv index to 1-based correct_indices array.
-                // Wait, my parser: `options.push(...)`. `correct_indices` are parsed from CSV (1-based).
-                // UI inputs: I should use 1-based or 0-based? Let's stick to 1-based for matching.
-
-                // RadioGroup value is usually string.
-                if (parseInt(answer) === q.correct_indices[0]) {
-                    isCorrect = true;
-                }
-            } else if (q.question_type === 'multiple_choice') {
-                // answer is array of 1-based indices
-                const userSelected = (answer as number[])?.sort() || [];
-                const correct = q.correct_indices.sort();
-                if (JSON.stringify(userSelected) === JSON.stringify(correct)) {
-                    isCorrect = true;
-                }
-            } else if (q.question_type === 'text') {
-                // For text, we can't really auto-grade easily without exact match. 
-                // Assuming "any input" is OK or strict match if we had an answer key.
-                // But CSV parser doesn't require answer key for text? 
-                // Actually correct_indices is empty for text. 
-                // Let's just assume valid if not empty.
-                if (answer && answer.trim().length > 0) isCorrect = true;
-            }
-
-            if (isCorrect) correctCount++;
-            else isAllCorrect = false;
+        questions.forEach(q => {
+            if (computeIsCorrect(q, answers[q.id])) correctCount++;
         });
-
         setScore({ correct: correctCount, total: questions.length });
-        setQuizStatus(isAllCorrect ? 'passed' : 'failed');
-
-        if (isAllCorrect) {
+        const allCorrect = correctCount === questions.length;
+        setQuizStatus(allCorrect ? 'passed' : 'failed');
+        if (allCorrect) {
             toast.success("全問正解です！完了できます。");
         } else {
             toast.error(`不正解があります (${correctCount}/${questions.length})`);
         }
     };
 
+    // 回答結果を後から確認できるよう user_answers に保存
+    const saveAnswers = async () => {
+        if (!isUUID(historyId)) return;
+        const payload: any[] = [];
+
+        for (const q of questions) {
+            if (!isUUID(q.id)) continue;
+            const ans = answers[q.id];
+            const isCorrect = computeIsCorrect(q, ans);
+
+            if (q.question_type === 'multiple_choice' && Array.isArray(ans)) {
+                for (const optId of ans) {
+                    if (isUUID(optId)) {
+                        payload.push({
+                            history_id: historyId,
+                            question_id: q.id,
+                            selected_option_id: optId,
+                            is_correct: isCorrect,
+                        });
+                    }
+                }
+            } else {
+                const optId = q.question_type === 'single_choice' && typeof ans === 'string' && isUUID(ans) ? ans : null;
+                payload.push({
+                    history_id: historyId,
+                    question_id: q.id,
+                    selected_option_id: optId,
+                    text_answer: q.question_type === 'text' ? ans : null,
+                    is_correct: isCorrect,
+                });
+            }
+        }
+
+        if (payload.length > 0) {
+            const { error } = await supabase.from("user_answers").insert(payload);
+            if (error) console.error("Failed to insert user_answers:", error);
+        }
+    };
 
     const handleComplete = async () => {
         if (isCompleting) return;
 
         // Guard: Quiz check
-        if (questions.length > 0 && quizStatus !== 'passed') {
+        if (hasQuiz && quizStatus !== 'passed') {
             toast.error("まずは確認問題に全問正解してください");
-            // Scroll to quiz
             document.getElementById('quiz-section')?.scrollIntoView({ behavior: 'smooth' });
             return;
         }
@@ -136,7 +160,8 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
         setIsCompleting(true);
 
         try {
-            // Completed via Server Action
+            if (hasQuiz) await saveAnswers();
+
             const result = await completeActivity(
                 historyId,
                 100, // Full score
@@ -158,7 +183,8 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
                 }
             }
 
-            router.push(`/dashboard`);
+            // 確認テストありの講習は回答結果を確認できるよう結果画面へ
+            router.push(hasQuiz ? `/dashboard/history/${historyId}` : `/dashboard`);
             router.refresh();
         } catch (e) {
             console.error(e);
@@ -193,7 +219,7 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
                 </CardContent>
             </Card>
 
-            {questions.length > 0 && (
+            {hasQuiz && (
                 <div id="quiz-section" className="space-y-6 border-t pt-8">
                     <div className="flex items-center gap-2">
                         <CheckCircle2 className="h-6 w-6 text-primary" />
@@ -202,30 +228,29 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
                     <p className="text-muted-foreground">学習内容の理解度を確認しましょう。全問正解すると完了できます。</p>
 
                     {questions.map((q, idx) => (
-                        <Card key={idx}>
+                        <Card key={q.id}>
                             <CardHeader>
-                                <div className="flex justify-between items-start">
+                                <div className="flex justify-between items-start gap-4">
                                     <div className="space-y-2">
                                         <Badge variant="outline">Q{idx + 1}</Badge>
                                         <div className="prose dark:prose-invert text-base leading-relaxed">
                                             <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                                {q.content}
+                                                {q.text}
                                             </ReactMarkdown>
                                         </div>
                                     </div>
-                                    <Badge>{q.points}pt</Badge>
                                 </div>
                             </CardHeader>
                             <CardContent>
                                 {q.question_type === 'single_choice' && (
                                     <RadioGroup
-                                        onValueChange={(val) => handleAnswerChange(idx, val)}
-                                        value={userAnswers[idx] || ""}
+                                        onValueChange={(val) => setAnswer(q.id, val)}
+                                        value={answers[q.id] || ""}
                                     >
-                                        {q.options.map((opt, optIdx) => (
-                                            <div key={optIdx} className="flex items-center space-x-2 p-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800">
-                                                <RadioGroupItem value={(optIdx + 1).toString()} id={`q${idx}-opt${optIdx}`} />
-                                                <Label htmlFor={`q${idx}-opt${optIdx}`} className="flex-1 cursor-pointer">{opt}</Label>
+                                        {q.options.map((opt) => (
+                                            <div key={opt.id} className="flex items-center space-x-2 p-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800">
+                                                <RadioGroupItem value={opt.id} id={`q${q.id}-opt${opt.id}`} />
+                                                <Label htmlFor={`q${q.id}-opt${opt.id}`} className="flex-1 cursor-pointer">{opt.text}</Label>
                                             </div>
                                         ))}
                                     </RadioGroup>
@@ -233,19 +258,19 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
 
                                 {q.question_type === 'multiple_choice' && (
                                     <div className="grid gap-2">
-                                        {q.options.map((opt, optIdx) => {
-                                            const current = userAnswers[idx] as number[] || [];
-                                            const isChecked = current.includes(optIdx + 1);
+                                        {q.options.map((opt) => {
+                                            const current = (answers[q.id] as string[]) || [];
+                                            const isChecked = current.includes(opt.id);
                                             return (
-                                                <div key={optIdx} className="flex items-center space-x-2 p-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800">
+                                                <div key={opt.id} className="flex items-center space-x-2 p-2 rounded hover:bg-slate-50 dark:hover:bg-slate-800">
                                                     <Checkbox
-                                                        id={`q${idx}-opt${optIdx}`}
+                                                        id={`q${q.id}-opt${opt.id}`}
                                                         checked={isChecked}
-                                                        onCheckedChange={(c) => handleCheckboxChange(idx, optIdx + 1, !!c)}
+                                                        onCheckedChange={(c) => toggleMulti(q.id, opt.id, !!c)}
                                                     />
-                                                    <Label htmlFor={`q${idx}-opt${optIdx}`} className="flex-1 cursor-pointer">{opt}</Label>
+                                                    <Label htmlFor={`q${q.id}-opt${opt.id}`} className="flex-1 cursor-pointer">{opt.text}</Label>
                                                 </div>
-                                            )
+                                            );
                                         })}
                                     </div>
                                 )}
@@ -253,12 +278,12 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
                                 {q.question_type === 'text' && (
                                     <Input
                                         placeholder="回答を入力"
-                                        value={userAnswers[idx] || ""}
-                                        onChange={(e) => handleAnswerChange(idx, e.target.value)}
+                                        value={answers[q.id] || ""}
+                                        onChange={(e) => setAnswer(q.id, e.target.value)}
                                     />
                                 )}
                             </CardContent>
-                            {(quizStatus === 'submitted' || quizStatus === 'failed' || quizStatus === 'passed') && q.explanation && (
+                            {quizStatus !== 'idle' && q.explanation && (
                                 <CardFooter className="bg-muted/50 block p-4">
                                     <p className="font-semibold text-sm mb-1">解説:</p>
                                     <p className="text-sm text-muted-foreground">{q.explanation}</p>
@@ -289,7 +314,7 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
                         )}
 
                         {quizStatus !== 'passed' && (
-                            <Button size="lg" onClick={checkAnswers} disabled={Object.keys(userAnswers).length < questions.length} className="w-full max-w-sm">
+                            <Button size="lg" onClick={checkAnswers} disabled={!allAnswered} className="w-full max-w-sm">
                                 答え合わせをする
                             </Button>
                         )}
@@ -299,7 +324,7 @@ export function LectureViewer({ historyId, programId, title, content, videoUrl, 
 
 
             <div className="flex justify-center pt-8 border-t">
-                {questions.length > 0 ? (
+                {hasQuiz ? (
                     <Button
                         size="lg"
                         onClick={handleComplete}

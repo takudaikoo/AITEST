@@ -254,6 +254,8 @@ export default function DashboardPage() {
 
     const ProgramCard = ({ program }: { program: any }) => {
         const isCompleted = program.isCompleted;
+        // 2026年6月の確認テストは1回のみ（再受験不可）
+        const isKakunin = program.category === '確認テスト';
         // Level lock logic for card display
         const isLevelLocked = !isCompleted && program.level_requirement > stats.level;
 
@@ -284,19 +286,34 @@ export default function DashboardPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="p-4 pt-0">
-                    <Button
-                        size="sm"
-                        className="w-full text-xs"
-                        variant={isCompleted ? "outline" : "secondary"}
-                        disabled={isLevelLocked}
-                        asChild={!isLevelLocked}
-                    >
-                        {isLevelLocked ? 'ロック中' : (
-                            <Link href={isCompleted && program.type !== 'lecture' && program.historyId ? `/dashboard/history/${program.historyId}` : `/dashboard/programs/${program.id}`}>
-                                {isCompleted ? '復習する' : '開始する'}
+                    {isLevelLocked ? (
+                        <Button size="sm" className="w-full text-xs" variant="secondary" disabled>
+                            ロック中
+                        </Button>
+                    ) : !isCompleted ? (
+                        <Button size="sm" className="w-full text-xs" variant="secondary" asChild>
+                            <Link href={`/dashboard/programs/${program.id}`}>開始する</Link>
+                        </Button>
+                    ) : isKakunin ? (
+                        // 確認テスト（2026年6月）は1回のみ・結果閲覧のみ
+                        <Button size="sm" className="w-full text-xs" variant="outline" asChild>
+                            <Link href={program.historyId ? `/dashboard/history/${program.historyId}` : `/dashboard/programs/${program.id}`}>
+                                結果を見る
                             </Link>
-                        )}
-                    </Button>
+                        </Button>
+                    ) : (
+                        // 研修・講習は何度でも受講可・回答結果も閲覧可
+                        <div className="flex w-full gap-2">
+                            {program.historyId && (
+                                <Button size="sm" className="flex-1 text-xs" variant="outline" asChild>
+                                    <Link href={`/dashboard/history/${program.historyId}`}>結果を見る</Link>
+                                </Button>
+                            )}
+                            <Button size="sm" className="flex-1 text-xs" variant="secondary" asChild>
+                                <Link href={`/dashboard/programs/${program.id}`}>再受験</Link>
+                            </Button>
+                        </div>
+                    )}
                 </CardFooter>
             </Card>
         );

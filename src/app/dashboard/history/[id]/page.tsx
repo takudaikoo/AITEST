@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowLeft, RotateCcw } from "lucide-react";
 
 interface HistoryDetailPageProps {
     params: {
@@ -23,7 +23,7 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
         .from("learning_history")
         .select(`
       *,
-      programs ( title, passing_score, type )
+      programs ( title, passing_score, type, category )
     `)
         .eq("id", params.id)
         .single();
@@ -51,6 +51,8 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
     const passingScore = history.programs?.passing_score || 80;
     const isPassed = history.score >= passingScore;
     const isLecture = history.programs?.type === 'lecture';
+    // 2026年6月の確認テストは1回のみ（再受験不可）
+    const isKakunin = history.programs?.category === '確認テスト';
 
     return (
         <div className="max-w-4xl mx-auto py-8 space-y-8">
@@ -58,9 +60,18 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
                 <h1 className="text-2xl font-bold">
                     {isLecture ? "受講結果" : "試験結果"}: {history.programs?.title}
                 </h1>
-                <Button variant="outline" asChild>
-                    <Link href="/dashboard"><ArrowLeft className="mr-2 h-4 w-4" /> ダッシュボードへ</Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                    {!isKakunin && history.program_id && (
+                        <Button asChild>
+                            <Link href={`/dashboard/programs/${history.program_id}`}>
+                                <RotateCcw className="mr-2 h-4 w-4" /> 再受験する
+                            </Link>
+                        </Button>
+                    )}
+                    <Button variant="outline" asChild>
+                        <Link href="/dashboard"><ArrowLeft className="mr-2 h-4 w-4" /> ダッシュボードへ</Link>
+                    </Button>
+                </div>
             </div>
 
             <Card className={isLecture ? "border-blue-500 bg-blue-50/10" : (isPassed ? "border-green-500 bg-green-50/10" : "border-red-500 bg-red-50/10")}>
