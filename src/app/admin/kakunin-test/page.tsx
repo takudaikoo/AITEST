@@ -8,6 +8,8 @@ const EXCLUDED_EMAILS = [
     "smagol.ryosuke.nishikawa@gmail.com", // 西川良輔
     "yuto_takasuka@gjb.co.jp",            // 高須賀優人
     "naoto_takasuka@gjb.co.jp",           // 高須賀直人
+    "ryosuke_kikuchi@gjb.co.jp",          // 菊池亮佑
+    "juza_ittogi@gjb.co.jp",              // 一藤木 十座
 ];
 
 export default async function KakuninTestPage() {
