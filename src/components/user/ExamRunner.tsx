@@ -16,6 +16,7 @@ import { Loader2, AlertCircle, CheckCircle, XCircle, Sparkles } from "lucide-rea
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { completeActivity } from "@/app/actions/gamification";
+import { buildAnswerSnapshot } from "@/lib/answer-snapshot";
 import { toast } from "sonner";
 
 interface ExamRunnerProps {
@@ -168,6 +169,7 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
             let obtainedScore = 0;
             const finalPayload: any[] = [];
             const incorrectQuestions: string[] = [];
+            const correctnessMap: Record<string, boolean> = {};
 
             for (const q of questions) {
                 const userAnswer = answers[q.id];
@@ -192,6 +194,8 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                         isCorrect = true;
                     }
                 }
+
+                correctnessMap[q.id] = isCorrect;
 
                 if (isCorrect) obtainedScore += (100 / questions.length);
                 else incorrectQuestions.push(q.id);
@@ -257,6 +261,18 @@ export function ExamRunner({ historyId, programId, timeLimit, questions }: ExamR
                         console.error("Weakness update failed", err);
                     }
                 }
+            }
+
+            // 回答の振り返り用スナップショットを保存
+            // （共有 questions テーブルにAIの問題が無く user_answers が保存できないため、
+            //   受験時点のデータを learning_history に持たせる）
+            try {
+                const snapshot = buildAnswerSnapshot(questions, answers, (q: any) => !!correctnessMap[q.id]);
+                await supabase.from("learning_history")
+                    .update({ program_snapshot_type: JSON.stringify(snapshot) })
+                    .eq("id", historyId);
+            } catch (snapErr) {
+                console.error("Failed to save answer snapshot:", snapErr);
             }
 
             // Update History

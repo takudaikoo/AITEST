@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle2, AlertCircle } from "lucide-react";
 import { completeActivity } from "@/app/actions/gamification";
+import { buildAnswerSnapshot } from "@/lib/answer-snapshot";
 import { toast } from "sonner";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -40,9 +41,6 @@ interface LectureViewerProps {
     videoUrl?: string; // Optional
     questions?: QuizQuestion[];
 }
-
-const isUUID = (str: string) =>
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(str);
 
 // 1問の正誤判定（答え合わせ表示と回答保存の両方で使用）
 function computeIsCorrect(q: QuizQuestion, answer: any): boolean {
@@ -108,42 +106,18 @@ export function LectureViewer({ historyId, title, content, videoUrl, questions =
         }
     };
 
-    // 回答結果を後から確認できるよう user_answers に保存
-    const saveAnswers = async () => {
-        if (!isUUID(historyId)) return;
-        const payload: any[] = [];
-
-        for (const q of questions) {
-            if (!isUUID(q.id)) continue;
-            const ans = answers[q.id];
-            const isCorrect = computeIsCorrect(q, ans);
-
-            if (q.question_type === 'multiple_choice' && Array.isArray(ans)) {
-                for (const optId of ans) {
-                    if (isUUID(optId)) {
-                        payload.push({
-                            history_id: historyId,
-                            question_id: q.id,
-                            selected_option_id: optId,
-                            is_correct: isCorrect,
-                        });
-                    }
-                }
-            } else {
-                const optId = q.question_type === 'single_choice' && typeof ans === 'string' && isUUID(ans) ? ans : null;
-                payload.push({
-                    history_id: historyId,
-                    question_id: q.id,
-                    selected_option_id: optId,
-                    text_answer: q.question_type === 'text' ? ans : null,
-                    is_correct: isCorrect,
-                });
-            }
-        }
-
-        if (payload.length > 0) {
-            const { error } = await supabase.from("user_answers").insert(payload);
-            if (error) console.error("Failed to insert user_answers:", error);
+    // 回答結果を後から確認できるよう、受験時点のスナップショットを保存する。
+    // （共有 questions テーブルにAIの問題が無く user_answers が保存できないため、
+    //   learning_history.program_snapshot_type に JSON として保持する）
+    const saveSnapshot = async () => {
+        try {
+            const snapshot = buildAnswerSnapshot(questions, answers, computeIsCorrect);
+            const { error } = await supabase.from("learning_history")
+                .update({ program_snapshot_type: JSON.stringify(snapshot) })
+                .eq("id", historyId);
+            if (error) console.error("Failed to save answer snapshot:", error);
+        } catch (e) {
+            console.error("Failed to save answer snapshot:", e);
         }
     };
 
@@ -160,7 +134,7 @@ export function LectureViewer({ historyId, title, content, videoUrl, questions =
         setIsCompleting(true);
 
         try {
-            if (hasQuiz) await saveAnswers();
+            if (hasQuiz) await saveSnapshot();
 
             const result = await completeActivity(
                 historyId,

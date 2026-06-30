@@ -54,6 +54,19 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
     // 2026年6月の確認テストは1回のみ（再受験不可）
     const isKakunin = history.programs?.category === '確認テスト';
 
+    // 回答スナップショット（受験時点のデータ）。共有 questions テーブルに依存しない振り返り。
+    let snapshotQuestions: any[] = [];
+    if (history.program_snapshot_type) {
+        try {
+            const parsed = JSON.parse(history.program_snapshot_type);
+            if (parsed && Array.isArray(parsed.questions)) {
+                snapshotQuestions = parsed.questions;
+            }
+        } catch {
+            // 旧データなどJSONでない場合は無視
+        }
+    }
+
     return (
         <div className="max-w-4xl mx-auto py-8 space-y-8">
             <div className="flex items-center justify-between">
@@ -102,7 +115,57 @@ export default async function HistoryDetailPage({ params }: HistoryDetailPagePro
 
             <div className="space-y-6">
                 <h3 className="text-xl font-semibold">回答の振り返り</h3>
-                {(() => {
+
+                {snapshotQuestions.length > 0 ? (
+                    <div className="space-y-6">
+                        {snapshotQuestions.map((q: any, index: number) => {
+                            const userAnswerDisplay = q.type === 'text'
+                                ? (q.userText || "未回答")
+                                : (q.userOptionTexts && q.userOptionTexts.length > 0 ? q.userOptionTexts.join(", ") : "未回答");
+                            const correctDisplay = q.type === 'text'
+                                ? (q.explanation || '解説参照')
+                                : (q.correctOptionTexts || []).join(", ");
+
+                            return (
+                                <Card key={index} className="overflow-hidden">
+                                    <CardHeader className="bg-secondary/20 pb-4">
+                                        <div className="flex items-start gap-4">
+                                            <Badge variant={q.isCorrect ? "default" : "destructive"} className="mt-1">Q{q.n ?? index + 1}</Badge>
+                                            <div className="flex-1 space-y-1">
+                                                <CardTitle className="text-base whitespace-pre-wrap">{q.text}</CardTitle>
+                                            </div>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-6 space-y-4">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <span className="text-sm font-medium text-muted-foreground">あなたの回答</span>
+                                                <div className={`p-3 rounded-md border text-sm whitespace-pre-wrap ${q.isCorrect ? 'bg-background' : 'border-red-300 bg-red-50/30'}`}>
+                                                    {userAnswerDisplay}
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <span className="text-sm font-medium text-muted-foreground">
+                                                    {q.type === 'text' ? '参考解答' : '正解'}
+                                                </span>
+                                                <div className="p-3 rounded-md border bg-muted/50 text-sm whitespace-pre-wrap">
+                                                    {correctDisplay}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {q.type !== 'text' && q.explanation && (
+                                            <div className="mt-4 rounded-md bg-blue-50/10 p-4 text-sm">
+                                                <span className="font-semibold block mb-1">解説:</span>
+                                                {q.explanation}
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                ) : (() => {
                     if (!userAnswers || userAnswers.length === 0) {
                         return (
                             <div className="text-center py-12 text-muted-foreground text-sm border-2 border-dashed rounded-lg">

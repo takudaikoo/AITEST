@@ -64,8 +64,9 @@ export default function DashboardPage() {
                 `)
                 .eq('user_id', user.id);
 
-            // Determine completed program IDs
-            const completedHistory = history?.filter(h => h.is_passed || h.status === 'completed') || [];
+            // Determine completed program IDs（最新の受験を優先するため受験日時の降順に並べる）
+            const completedHistory = (history?.filter(h => h.is_passed || h.status === 'completed') || [])
+                .sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime());
             const getProgramId = (item: any) => {
                 const prog = item.programs;
                 if (Array.isArray(prog)) return prog[0]?.id;
